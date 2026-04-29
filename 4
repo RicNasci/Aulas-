@@ -133,8 +133,264 @@ expressões aritméticas devem ser linearizadas, ou seja, colocadas em linha
 Veja, a seguir, exemplos de como é uma fórmula na matemática tradicional e
 como ela fi ca linearizada. 
 
+4.8.1. Contadores e acumuladores
+
+• Contador++ (incremento) sempre aumentando  
+* Contador --(decremento) sempre  decrescente - a logica será sempre 1., mais pode-se usar  2,3,4 etc... 
+contador++ 
+Um contador é construído a partir de uma variável que recebe o valor dela
+mesma mais outro valor.
+A linha que descreve um contador A é:
+A = A + 1
+
+Nesse exemplo a variável A está recebendo o valor dela mesma mais
+1, ou seja, está contando de 1 em 1. O valor 1 é uma constante.
+
+• Acumulador 
+Um acumulador é uma variável que recebe o valor dela mesma mais o valor de
+outra variável.
+B = B + A  ; B recebe B+A 
+
+Exemplo 
+resultado=10+5
+resultado=15
+Nesse exemplo, a variável B está recebendo o valor dela mesma mais o valor da
+variável A. A variável A representa o valor a ser somado, acumulado na variável
+B.
+
+• Acumulador de Conta
+
+A linha que descreve um acumulador C do dobro de B é:
+C = C + 2 * B
+Nesse exemplo, a variável C está recebendo o valor dela mesma mais duas
+vezes o valor da variável B.
+
+4.9. Operadores relacionais
+Quando encontramos situações nas quais é necessário usar condições, adotamos
+os seguintes operadores para estabelecer relações:
+
+OPERAÇÃO        OPERADOR USADO
+Igual a              =
+Maior que            >
+Menor que            <
+Maior ou igual a     > =
+Menor ou igual a     < =
+Diferente de         < >
+
+Exemplos
+## Em um algoritmo:
+
+Se o Cargo for igual a Gerente
+Então conceder um aumento de 10% no salário
+Senão conceder um aumento de 5% no salário
+Fim Se
+"Observação: Note que o comando FIM SE acima foi colocado pra
+identifi car o fi m do comando SE" 
+
+## Numa linguagem de programação
+IF Cargo = “Gerente”
+Salario = Salario * 1.10
+ELSE
+Salario = Salario * 1.05
+ENDIF
+
+4.10. Operadores lógicos
+
+São usados quando existem duas ou mais condições em um teste lógico, e assim
+como os operadores de comparação, retornam um resultado VERDADEIRO ou
+FALSO:
+• NÃO (NOT) – Ordem de Prioridade: 1a
+Operador lógico que inverte a lógica de uma expressão. Se ela for verdadeira,
+torna-se falsa, e vice-versa.
+
+• E (AND) – Ordem de Prioridade: 2a
+Operador lógico em que a resposta da operação é verdadeira somente se as
+duas condições forem verdadeiras
+
+Se o Cargo for igual a Gerente E a Idade for maior ou igual a 50 anos
+Então conceder um aumento de 10% no salário
+Senão conceder um aumento de 5% no salário
+Fim Se
+
+OU (OR) – Ordem de Prioridade: 3a
+Operador lógico em que a resposta da operação é verdadeira se pelo menos
+uma das condições for verdadeira.
+
+Se o cargo for igual a Gerente OU a Idade for maior ou igual a 50 anos
+Então conceder um aumento de 10% no salário
+Senão conceder um aumento de 5% no salário
+Fim Se
+
+4.10.1. Tabela de decisão
+
+Partindo de uma condição, podemos tomar uma ou outra decisão.
+Exemplo:
+
+Se estiver com fome irei almoçar.
+Senão não irei almoçar.
+1ª decisão: Se estiver com fome irei almoçar
+ Verdadeiro   Verdadeiro
+    SE            ENTÃO
+
+2ª decisão: Se estiver com fome irei almoçar
+    Falso         Falso
+     SE           ENTÃO
+Observe que podemos escrever na negativa e o resultado será o mesmo.
+
+Se NÃO estiver com fome NÃO irei almoçar.
+Senão irei almoçar.
+
+A TABELA DE DECISÃO também é conhecida como TABELA VERDADE.
+Vamos criar uma tabela unindo duas condições, usando o operador E.
+Vamos supor, então, que o almoço só é servido após o meio-dia:
+Se estiver com fome e for meio-dia, irei almoçar
+↓ ↓
+Verdadeiro Verdadeiro
+SE E ENTÃO
+Somente quando as duas primeiras proposições forem verdadeiras, a terceira
+também será.
+Se estiver com fome e for meio-dia então irei almoçar
+V + V = V
+V + F = F
+F + V = F
+F + F = F
 
 
+4.10.2. Tabela de decisão com números binários
+Neste caso o número zero (0) tem valor FALSO e o número um (1) tem valor
+VERDADEIRO.
+Usando o operador E, somente quando as duas primeiras proposições forem
+verdadeiras, a terceira também será.
+
+Somente quando os
+dois primeiros números
+forem “um” (1), o terceiro
+também será.
+
+1 1 0 0  Estiver com fome E
+1 0 1 0  For meio dia
+1 0 0 0  Irei almoçar
+
+Usando o operador OU, basta que apenas uma das duas primeiras proposições
+seja verdadeira para que a terceira também seja.
+
+Basta que apenas um dos
+dois primeiros números
+seja “um” (1), para que o
+terceiro também seja.
+
+1 1 0 0  Estiver com fome OU
+1 0 1 0  For meio dia
+1 1 1 0  Irei almoçar
+
+Podemos efetuar operações binárias com variáveis. Como exemplo, vamos
+supor que A = 0101 e B = 1111.
+NÃO é um operador que
+inverte a lógica. Se for
+verdade, torna-se falsa,
+e vice-versa.
+
+1 0 1  A
+1 1 1 1  B
+0 1 0 1  A E B
+1 0 1 0  NÃO (A E B)
+
+• Exemplos:
+Dadas as variáveis:
+ Numéricas: A = 10, B = 5, C = 2
+ Lógicas: X = FALSO, Y = VERDADEIRO
+Vejamos os resultados das expressões:
+a) A < B E C >= 2
+FALSO E VERDADEIRO
+Resposta: FALSO
+
+b) A - 5 < B E C <= A / 2
+FALSO E VERDADEIRO
+Resposta: FALSO
+
+c) A < B OU C < B
+FALSO OU VERDADEIRO
+Resposta: VERDADEIRO
+
+d) B < A OU C > B E 2 * C < B
+VERDADEIRO OU FALSO E VERDADEIRO
+VERDADEIRO OU FALSO
+Resposta: VERDADEIRO
+
+e) B < A E C > B E 2 * C < B
+VERDADEIRO E FALSO E VERDADEIRO
+FALSO E VERDADEIRO
+Resposta: FALSO
 
 
+4.11. Função
 
+Função é uma rotina que retorna um valor específi co.
+
+STR( ): Transforma número em caracteres numéricos;
+• VAL( ): Transforma caracteres numéricos em número;
+• LEN( ): Retorna um inteiro contendo o número de caracteres de uma
+sequência de caracteres, ou seja, conta os caracteres.
+A = 10
+B = STR(A) è B = “10”
+C = STR(A * 5) è C = “50”
+D = STR(A - 6) è D = “4”
+E = STR(2000) è E = “2000”
+
+TOT = ”123”
+N1 = VAL ( TOT ) è N1 = 123
+NOME = “JOAQUIM JOSE DA SILVA XAVIER”
+N2 = LEN ( NOME ) è N2 = 28
+
+
+4.12. Concatenação de alfanuméricos
+Os símbolos para concatenação de alfanuméricos são: & ou + .
+Exemplo:
+DIA = 19
+MES = “abril”
+ANO = 2013
+CIDADE = “São Paulo”
+
+A seguir, temos um exemplo de como fica a criação da variável DATA utilizando
+as variáveis anteriores para resultar no texto São Paulo, 19 de abril de 2013:
+DATA = CIDADE & “, ” & STR(DIA) & “ de ” & MES & “ de ” & STR(ANO)
+
+Pontos principais
+Atente para os tópicos a seguir. Eles devem ser estudados com muita
+atenção, pois representam os pontos mais importantes do capítulo.
+
+• Variáveis são áreas na memória, utilizadas em programação, que servem
+para armazenar dados. O conteúdo de uma variável pode ser alterado, mas
+uma variável só pode conter um dado por vez;
+
+• Com as variáveis podemos verifi car a veracidade, ou não, de uma condição
+para assim obtermos um ou outro resultado;
+
+• As variáveis de memória podem ser usadas para o controle de repetições
+de comandos;
+• Quando trabalhamos com arquivos de bancos de dados, podemos fazer
+comparações, trocas e procuras de registros através das variáveis de
+memória;
+
+• Para declarar uma variável, devemos informar o nome e o tipo da variável;
+• O nome de uma variável não pode começar por um número e só é permitido
+
+o uso de underline (_) no nome, e nenhum outro sinal. Evite utilizar nomes
+de comandos, funções ou campos de um banco de dados nas variáveis;
+O comando de atribuição serve para guardar uma informação na área de
+memória do computador. Utilizaremos o sinal de igual (=) para representar
+o comando de atribuição;
+
+• Diferente das variáveis, as constantes possuem valor fi xo e não sofrem
+alteração durante o processamento;
+
+• Em programação, utilizamos os mesmos operadores aritméticos da
+matemática, com as mesmas prioridades. Em primeiro lugar, são executadas
+as exponenciações e as radiciações, em segundo as multiplicações e as
+divisões, e depois as adições e as subtrações;
+
+• Os operadores lógicos são usados quando existem duas ou mais condições
+em um teste lógico;
+
+• Função é uma rotina que retorna um valor específi co;
+• Os símbolos utilizados para concatenação de alfanuméricos são & ou +.
