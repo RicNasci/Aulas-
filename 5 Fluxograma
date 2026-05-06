@@ -1,1 +1,23 @@
+Para entender de web precisa ver videos sobre o protocolo HTTP, get(buscar), post(enviar dado), ptu ( atualizar) e delete, deletar
+Versões: Livro desconstruindo a web. 
+F12, nerwroking
 
+Classe, atributos e métodos. Transfomar em código, prompt ajuda a acelerar a produtividade.  
+
+Atente para os tópicos a seguir. Eles devem ser estudados com muita
+atenção, pois representam os pontos mais importantes do capítulo.
+• Fluxograma, ou Diagrama de Blocos, é a representação gráfi ca de um
+algoritmo, sendo constituído de blocos funcionais que mostram o fl uxo
+dos dados e as operações efetuadas com eles;
+• O fluxograma utiliza símbolos que permitem a descrição, de forma clara e
+objetiva, da sequência dos passos a serem executados;
+• Numa programação, para efetuarmos uma decisão, podemos utilizar o
+comando SE, ENTÃO, SENÃO (IF, THEN, ELSE). O ENTÃO é a saída verdadeira
+e o SENÃO é a saída falsa do comando SE;
+• O comando FIM SE é a união das setas dos fl uxos que vêm do lado verdadeiro
+(ENTÃO) e do lado falso (SENÃO) da decisão. A partir deste ponto só existe
+uma seta fluxo, ou seja, só existe um caminho a seguir;
+• Teste de mesa é a simulação da execução de um algoritmo, programa ou
+fluxograma.
+
+Refazer os calculos 
