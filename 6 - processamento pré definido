@@ -1,0 +1,56 @@
+Introdução à Lógica de Programação
+1. Dado o processamento predefinido:
+SOMAR (X , Y , Z NUMÉRICAS)
+Z = X + Y
+SAÍDA
+Faça o teste de mesa para o programa a seguir:
+PROGRAMA1
+DECLARA A, B, C NUMÉRICAS
+A = 1
+B = 2
+C = 0
+SOMAR ( A , B , C )
+SOMAR ( B , C , A )
+SOMAR ( C , A , B )
+SOMAR ( A , B , C )
+SOMAR ( B , C , A )
+EXIBIR A, B, C
+FIM
+Após o teste de mesa, os valores exibidos das variáveis A, B e C são:
+ a) 5, 8, 3
+ b) 5, 8, 13
+ c) 5, 2, 3
+ d) 21, 8, 13
+ e) Nenhuma das alternativas anteriores está correta.
+127
+Proces samento predefi nido 6
+2. Dado o seguinte processamento predefinido:
+TROCAR ( X , Y NUMÉRICAS)
+DECLARA AUX NUMÉRICA
+SE X > Y ENTÃO
+AUX = X
+X = Y
+Y = AUX
+FIM SE
+SAÍDA
+Faça o teste de mesa para o programa a seguir:
+PROGRAMA2
+DECLARA A, B, C, D NUMÉRICAS
+A = 10
+B = 5
+C = 7
+D = 1
+TROCAR ( A , B )
+TROCAR ( B , C )
+TROCAR ( C , D )
+TROCAR ( A , B )
+TROCAR ( B , C )
+TROCAR ( A , B )
+EXIBIR A , B , C , D
+FIM
+Após o teste de mesa, os valores exibidos das variáveis A, B e C são:
+ a) 1, 7, 1, 10
+ b) 5, 1, 7, 10
+ c) 1, 5, 7, 10 (Resposta) 
+ d) 7, 1, 5, 10
+ e) Nenhuma das alternativas anteriores está correta.
