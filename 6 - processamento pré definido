@@ -40,13 +40,18 @@ A = 10
 B = 5
 C = 7
 D = 1
-TROCAR ( A , B )
-TROCAR ( B , C )
-TROCAR ( C , D )
-TROCAR ( A , B )
-TROCAR ( B , C )
-TROCAR ( A , B )
-EXIBIR A , B , C , D
+TROCAR ( A(x)10 , B(y)5 ) (5,10)
+- Aux recebe valor de x= logo x=10
+TROCAR ( B(x)5 , C(y)7 )(7,5) (fim)
+TROCAR ( C(x)7 , D(y)1 )(1,7) 
+- Aux recebe valor de x= logo x=1
+TROCAR ( A(x)10 , B(y)5 (5,10)
+- Aux recebe valor de x= logo x=5
+TROCAR ( B(x)5 , C(y)7 ) fim
+TROCAR ( A(x)10 , B(y)5 (5,10)
+- Aux recebe valor de x= logo x=5
+EXIBIR A, B , C , D
+
 FIM
 Após o teste de mesa, os valores exibidos das variáveis A, B e C são:
  a) 1, 7, 1, 10
@@ -54,3 +59,68 @@ Após o teste de mesa, os valores exibidos das variáveis A, B e C são:
  c) 1, 5, 7, 10 (Resposta) 
  d) 7, 1, 5, 10
  e) Nenhuma das alternativas anteriores está correta.
+
+3. Dado os seguintes processamentos predefinidos:
+SOMAR ( X , Y , Z NUMÉRICAS )
+Z = X + Y
+SAÍDA
+e
+TROCAR ( X , Y NUMÉRICAS)
+DECLARA AUX NUMÉRICA
+SE X > Y ENTÃO
+AUX=X
+X = Y
+Y = AUX
+FIM SE
+SAÍDA
+Faça o teste de mesa para o programa a seguir:
+PROGRAMA3
+DECLARA A, B, C, D NUMÉRICAS
+A = 5
+B = 2
+C = 0
+D = 0
+SOMAR ( A(5) x , B(2)y, C(0)x )
+TROCAR ( A(5) , B(2) ) verdadeiro . Aux=7
+SOMAR ( B , C , D )
+TROCAR ( C , B )
+TROCAR ( A , D )
+SOMAR ( D , A , B )
+EXIBIR A , B , C , D
+FIM
+Após o teste de mesa, os valores exibidos das variáveis A, B e C são:
+ a) 2, 14, 7, 12
+ b) 2, 14, 5, 12
+ c) 5, 14, 7, 9
+ d) 2, 12, 5, 9
+ e) Nenhuma das alternativas anteriores está correta.
+
+Análise Crítica
+Aguarde! Há uma questão importante sobre a Passo 5 (TROCAR(A, D)):
+
+Na minha interpretação anterior, presumi que TROCAR sem condição verdadeira não altera valores. Porém, o resultado esperado poderia variar dependendo de como o algoritmo TROCAR é aplicado.
+
+Deixe-me verificar novamente com outra interpretação:
+
+Passo	Operação	A	B	C	D
+0	Inicial	5	2	0	0
+1	SOMAR(A, B, C)	5	2	7	0
+2	TROCAR(A, B)	2	5	7	0
+3	SOMAR(B, C, D)	2	5	7	12
+4	TROCAR(C, B)	2	7	5	12
+5	TROCAR(A, D)	2	7	5	12
+6	SOMAR(D, A, B)	2	14	5	12
+Final	EXIBIR	2	14	5	12
+✅ Resposta Final
+A = 2, B = 14, C = 5, D = 12
+
+Alternativa: (b) 2, 14, 5, 12 ✓
+Conceitos Aplicados (Aula 1):
+✅ Variáveis numéricas - Espaços na memória para armazenar números
+✅ Sequência lógica - Execução passo a passo das instruções
+✅ Métodos/Funções - SOMAR e TROCAR são procedimentos reutilizáveis
+✅ Condicionais - SE/ENTÃO para decisões (na função TROCAR)
+__+______+____ 
+
+______Revisar_________
+
