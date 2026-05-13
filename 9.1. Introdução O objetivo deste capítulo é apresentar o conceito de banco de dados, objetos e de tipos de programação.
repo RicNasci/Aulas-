@@ -1,1 +1,104 @@
+9.1. Introdução
+O objetivo deste capítulo é apresentar o conceito de banco de dados, objetos
+e de tipos de programação.
+
+Um banco de dados é uma coleção de informações relacionadas a um
+determinado assunto ou fi nalidade, como um cadastro de fornecedores, um
+cadastro de produtos no estoque de uma empresa ou uma agenda.
+As informações armazenadas em um banco de dados podem ser consultadas,
+comparadas, alteradas, impressas ou excluídas.
+Ao criar um banco de dados, é fundamental que haja um planejamento voltado
+para o objetivo e forma de utilização desse banco, ou seja, é necessário considerar
+que tipos de informações ele deve conter.
+
+A estrutura de dados é uma área na qual defi nimos quais são os dados que
+queremos armazenar:
+• Campo: É composto por um caractere ou um conjunto de caracteres. Os
+campos correspondem às colunas da tabela;
+• Registro: Um campo ou um conjunto de campos. Os registros correspondem
+às linhas da tabela;
+• Tabela: É composta por um registro ou um conjunto de registros, e um
+campo ou um conjunto de campos;
+• Banco de dados: É composto por uma tabela ou um conjunto de tabelas.
+1º cria a base de dados
+2º cria a tabela 
+3º Campos e registros
+
+Analise  
+
+SELECT  * FROM TB_PROFESSORES
+SELECT ID, NOME, DISCIPLINA, FROM TB_PROFESSORES
+
+Tabela: AGENDA
+ID NOME ENDEREÇO TELEFONE UF
+01 André Rua Presidente, 07 99-99999-9199 SP
+02 Rute Al. das Árvores, 32 99-99999-9992 RJ
+03 Solange Rua da Praça, 454 99-99999-9939 SP
+04 Sandra Rua Alegre, 23 99-9999-4999 BA
+05 Luis Al. das Fontes,
+602 99-9999-5999 SC
+
+Observando a tabela anterior, podemos notar que os tipos de dados
+podem ser diferentes para cada campo.
+
+No planejamento de uma tabela, é importante que sejam analisadas as
+necessidades dos formulários, das consultas e dos relatórios do banco de dados.
+Os bancos de dados que possuem tabelas relacionadas entre si são chamados
+de bancos de dados relacionais.
+
+Uma tabela deve armazenar apenas informações sobre o mesmo assunto
+
+PRIMARY K = "CHAVE PRIMARIA"
+FOREING KY ="CHAVE ESTRANGEIRA"
+
+9.2.1. Considerações para tipos de dados
+
+Para decidir a espécie de tipo de dados a ser utilizada para um campo, podemos
+tomar como base as seguintes considerações:
+• A espécie de valores que desejamos armazenar no campo. Por exemplo,
+não é possível armazenar texto em um campo com um tipo de dados DATA;
+• O espaço de armazenamento que desejamos utilizar para os valores neste
+campo;
+• Os tipos de operações que desejamos efetuar com os valores do campo.
+Por exemplo, não é possível somar valores em campo com tipo de dados
+TEXTO, mas em campos do tipo NÚMERO é possível;
+• A classifi cação dos valores de um campo. Os números são classifi cados
+como sequências de caracteres em um campo do tipo TEXTO (1, 10, 2, 20,
+3, 30, e assim por diante) e não como valores numéricos. Para classifi car
+números como valores numéricos utilizamos um campo do tipo NÚMERO.
+
+9.2.2. Tipos de dados
+A seguir, descrevemos os tipos de dados mais utilizados nas linguagens de
+programação:
+• Texto: Texto ou combinações de textos e números, como endereços ou
+números que não exijam cálculos, como números de telefone ou códigos
+postais;
+• Número: Dados numéricos a serem utilizados em cálculos matemáticos;
+• Moeda: Valores monetários. Evita o arredondamento durante os cálculos;
+• Data/Hora: Datas e horas;
+• Lógico (Booleano): Campos que irão conter somente um entre dois valores,
+como Sim/Não, Verdadeiro/Falso ou Ativado/Desativado;
+• Objeto: Objetos criados em outros programas (como documentos do
+Microsoft Word, planilhas do Microsoft Excel, fi guras, sons ou outros dados
+binários).
+
+9.3. Modelo de dados
+É o diagrama contendo as estruturas de dados e os relacionamentos.
+9.3.1. Relacionamento
+O relacionamento é um componente que defi ne como duas tabelas se
+relacionam. As duas tabelas que se deseja ligar devem, obrigatoriamente, ter
+um campo em comum. Este campo recebe o nome de chave.
+9.3.1.1. Chave primária
+O campo CHAVE PRIMÁRIA determina de forma exclusiva cada registro
+armazenado. Não existem dois registros com o mesmo dado em um campo
+CHAVE PRIMÁRIA de uma mesma tabela.
+
+9.3.1.2. Chave estrangeira
+Chamamos de CHAVE ESTRANGEIRA o campo que possui um relacionamento
+com uma CHAVE PRIMÁRIA de outra tabela. Esse tipo de chave, que pode
+ocorrer repetidas vezes, estabelece um relacionamento entre a tabela em que
+ela está localizada e a tabela que contém a CHAVE PRIMÁRIA.
+
+
+
 
