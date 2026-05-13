@@ -1,1 +1,127 @@
+Vetores e matrizes;
+ Laços encadeados.
+
+8.1. Vetores e matrizes
+Neste capítulo aprenderemos a utilizar as variáveis indexadas em programação.
+Variáveis indexadas são um conjunto de variáveis que apresentam o mesmo
+nome, são do mesmo tipo, mas são diferentes no valor de seu índice.
+As variáveis indexadas podem ter várias dimensões:
+
+Dados dois números inteiros positivos m e n, chama-se matriz m x n a tabela
+formada por m.n números reais, dispostos em m linhas (horizontais) e n colunas
+(verticais).
+Importante: Cada elemento é indicado por aij, em que i indica a linha
+e j, a coluna, às quais aij pertence.
+
+Um elemento de uma tabela pode ser referenciado de duas formas: Implícita e
+Explícita. Vejamos a seguinte tabela:
+
+Referência implícita: Usamos o índice para nos referenciar a um certo
+elemento da tabela. A seguir, temos um exemplo de referência implícita,
+considerando a tabela de dias da semana mostrada anteriormente:
+POC - prova de conceito
+
+Exemplo 1
+Variável: AB[1:5]
+Índice Elemento
+AB[1]
+AB[2]
+AB[3] *
+AB[4]
+AB[5]
+AB[3] = “*”
+
+Exemplo 2
+Variável: CD[1:5]
+CD[1] *
+CD[2] *
+CD[3] *
+CD[4] *
+CD[5] *
+• Exemplo 3
+1 2 3
+1 EF[1,1] EF[1,2] EF[1,3]
+2 EF[2,1] EF[2,2] EF[2,3]
+3 EF[3,1] EF[3,2] EF[3,3]
+INÍCIO
+FIM
+Próximo X
+Declara X
+numérica, CD[1:5]
+alfanumérica
+CD[X] = “*”
+Para X = 1
+até 5
+passo + 1
+Coloca asteriscos em
+toda a matriz
+F
+Variável: EF[
+
+A seguir, temos um algoritmo e o fl uxograma correspondente que verifi ca se
+um número digitado é encontrado num vetor. Será exibida uma mensagem
+informando se o número foi encontrado ou não. Como vetor, vamos considerar
+VET [ 1:10 ].
+
+INÍCIO
+Declara VET [ 1:10 ], NUM, L numéricas, MSG alfanumérica
+MSG = “Não encontrou”
+NUM = 0
+Ler NUM
+Para L = 1 até 10 passo + 1
+Se VET [ L ] = NUM
+Então MSG = “Número encontrado”
+L = 10
+Fim Se
+Próximo L
+Exibir MSG
+FIM
+
+8.2. Laços encadeados
+Laços ou Loops encadeados são laços executados dentro de outros laços. No
+caso do comando PARA, o primeiro a ser criado é o último a ser fechado. O
+comando PRÓXIMO fecha o laço. O último comando PARA aberto é o primeiro
+a ser fechado com o comando PRÓXIMO, ou seja, o último loop criado é o
+primeiro a ser fechado. Vejamos um exemplo de laço encadeado a seguir:
+
+precisamos parar para tentar entender o que foi solicitado.
+
+
+INÍCIO
+Declara A, B numéricas
+Para A = 1 até 9 passo + 3
+Para B = 5 até 10 passo + 2
+Exibir A, “ – “, B
+Próximo B
+Próximo A
+Exibir A , “ – “, B
+FIM
+
+Testes de mesa, 1 requisições, debg é uma forma de descobrir erros no programa/Api// 
+quando não souber onde esta o erro, coloque varios debgs e envie a requisição, no primeiro que ele parar será onde esta o problema.
+
+professor ficou de passar uma listagem das dicas importantes
+1 - Verbo HTTP 
+
+
+
+Banco de d ados
+e tipos de
+programação
+
+Banco de dados;
+ Modelo de dados;
+ Objeto;
+ Tipos de programação;
+ Criação de tabelas;
+ Relacionamento das tabelas;
+ Consistência dos campos;
+ Sistema de controle de cadastro.
+
+Antigamente o DBA participava das reuniões mais importantes por que os softwares eram dominados pelos DBA'S
+
+
+
+
+
 
