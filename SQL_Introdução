@@ -1,1 +1,502 @@
+select*from TB_CARGO
+--select=ler ou calcular
+--essa linha é apenas consulta
+--*todos os registros e todas as colunas 
+select*from TB_DEPARTAMENTO
+select*from TB_DEPENDENTE
+select*from TB_EMPREGADO
+select*from TB_FORNECEDOR
+select*from TB_ITENSPEDIDO
+select*from TB_PEDIDO
+select*from TB_PROD_FORN
+select*from TB_PRODUTO
+select*from TB_TIPOPRODUTO
+select*from TB_UNIDADE
+select*from TB_VENDEDOR
+select*from TB_CLIENTE
+
+select nome, endereco, cidade, estado from TB_CLIENTE
+select Preco_venda, Preco_custo,QTD_REAl from TB_Produto
+
+--Atalhos
+-- Painel Resultados
+Tools>Options>Environment>Keyboard>	Window.ShowResultPane
+	Press shortcut keys=CTRL+Barra Invertida
+
+- Execução da área selecionada
+Tools>Options>Environment>Keyboard>Query.Execute
+	Press shortcut keys=ALT+X
+
+- Numeros das linhas
+Tools>Options>Text Editor>All Languages>General
+	Line Numbers= marcar
+
+-- Barra de anotações vertical (lado direito)
+Tools>Options>Text Editor>All Languages>ScrollBars>	Show annotations over vertical scroll bar = desmarcar 
+
+- Tabulação
+Tools>Options>Text Editor>All Languages>General, Scroll Bars, Tabs
+	Identing=None ##Tab Size=2 ## Keeps tabs=Marcar
+
+Variantes
+	Object Explorer>Tecla direita no nome do servidor>Properties>Advanced>Default Language
+	Object Explorer>Security>Logins>NomeDoLogin>Properties>Default Language
+
+Fontes
+	Tools>Options>Environment>Fonts ad Colors>Text Editor
+	Verdana Pro Semibold #12,
+	MS Reference Sans Serif - Size 12 - Bold,
+	Rockwell, 
+	Tahoma,
+	Terminal, 
+	Microsoft Tae Li
+
+Ativar o Itellisense
+Tools>Options>TextEditor>Transact-SQL>Intellisense
+
+Ativar Auto Listagem
+Tools>Options>Text Editor>All Languages>General>Auto List Member --- MARCAR
+
+Desativar Identação
+Tools>Options>Text Editor>All Languages>Tabs>indenting>None  --- MARCAR
+-- 
+
+
+select*from tb_cliente
+-- classificar por cidades
+select nome, endereco, cidade, estado from tb_cliente -- sempre selecionar as duas linhas 
+where estado='sp'order by cidade
+
+-- Não listar linhas onde a cidade não está prenchida 
+select nome, 
+endereco, 
+cidade, 
+estado 
+from tb_cliente -- sempre selecionar as duas linhas 
+where estado='sp' and cidade is not null and cidade<>''
+order by cidade
+
+-- listar os registros de sp e mg 
+select nome, 
+endereco, 
+cidade, 
+estado 
+from tb_cliente -- sempre selecionar as duas linhas 
+where estado in('sp','mg')
+and cidade is not null and cidade<>''
+order by cidade
+
+select*from tb_produto -- is not null 
+select descricao,preco_custo,preco_venda from tb_produto
+where preco_venda is not null
+
+select*from tb_produto -- is not null e tambem >=2
+select descricao,preco_custo,preco_venda from tb_produto
+where preco_venda is not null and preco_venda>=2
+
+select*from tb_produto -- is not null e tambem entre 1 e 2.5
+select descricao,preco_custo,preco_venda from tb_produto
+where preco_venda is not null and preco_venda>=1 and preco_venda<=2.5
+
+--simulação de aumento(15%) incluir nome na coluna 
+select*from tb_produto -- is not null e tambem entre 1 e 2.5
+select descricao,preco_custo,preco_venda *1.15 as aumento from tb_produto
+select descricao,preco_custo,preco_venda,
+(preco_venda+preco_venda*0.15) as aumento from tb_produto
+-- toda vez que for colocar o nome na coulna incluir "as" 
+
+-simulação de desconto (0.9%) incluir nome na coluna 
+select*from tb_produto -- is not null e tambem entre 1 e 2.5
+select descricao,preco_custo,preco_venda *0.9 as Desconto from tb_produto
+-- toda vez que for colocar o nome na coulna incluir "as" 
+
+--Percentual de lucro  
+select descricao,
+preco_custo,
+preco_venda,
+(preco_venda/preco_custo)-1 as Percentual
+from tb_produto
+where preco_venda>0 and preco_custo>0
+
+--Percentual de lucro  
+select descricao,
+preco_custo,
+preco_venda,
+(preco_venda/preco_custo)-1 as Percentual
+from tb_produto
+where preco_venda>0 and preco_custo>0
+
+--Preço médio de venda  (avg = média aritimética)
+select avg (preco_venda)
+as média 
+from tb_produto
+
+--Calcular o valor médio dos pedidos, select*from, para ver o nome da coluna que estavam o nome do
+select*from tb_pedido
+select avg (vlr_total) 
+as média_pedido 
+from tb_pedido
+
+listar o nome dos empregados e seus salarios para valores >=3mil 
+select*from tb_empregado
+select nome, salario from tb_empregado
+where salario >=3000  
+
+--- diagrama do banco de dados  --- 
+
+listar o nome dos empregados e seus salarios para valores entre 3mil e <=5mil 
+select nome, salario from tb_empregado
+where salario between 3000 and 5000
+order by salario
+
+--Em ordem decrescente (Desc)
+select nome, salario from tb_empregado
+where salario>=3000 and salario <=5000
+order by 2 desc
+
+--Por salario e para saalrios iguais por nome 
+select nome, salario from tb_empregado
+where salario>=3000 and salario <=5000
+order by 2,1
+
+-- listar o nome e a data de admissão dos empregados admitidos em 2006
+
+
+select *from tb_empregado
+select nome, data_admissao from tb_empregado
+where data_admissao between '2006.01.01' and '2006.12.31' 
+
+select nome, data_admissao from tb_empregado
+where year (data_admissao)=2006 
+
+-- Somar o valor das vendas no periodo 15/06/2006 a 15/07/2006
+
+select *from tb_pedido
+select sum (vlr_total) from tb_pedido
+where data_emissão between'2016.06.15' and '2016.07.15'
+
+--- criar uma tabea com os 5 empregados com maior numero de dependentes 
+
+select nome, num_depend from tb_empregado
+--
+select nome, num_depend from tb_empregado order by 2 desc
+--
+select top 5 nome, num_depend from tb_empregado order by 2 desc
+--
+
+select top 5 nome, num_depend into CincoMaiores from tb_empregado order by 2 desc -- criação de tabela
+---
+select*from CincoMaiores
+
+
+
+Structured Query Language, ou Linguagem de Consulta Estruturada ou SQL, 
+é a linguagem de pesquisa declarativa padrão para banco de dados relacional 
+(base de dados relacional). Muitas das características originais do SQL 
+foram inspiradas na álgebra relacional
+
+--------------------------------------------------------------------
+DML - Linguagem de Manipulação de Dados
+	SELECT 	- O Select é o principal comando usado em SQL para realizar consultas a dados pertencentes a uma tabela.
+	FROM 	– Utilizada para especificar a tabela que se vai selecionar os registros.
+	WHERE 	– Utilizada para especificar as condições que devem reunir os registros que serão selecionados.
+	GROUP BY – Utilizada para separar os registros selecionados em grupos específicos.
+	HAVING 	– Utilizada para expressar a condição que deve satisfazer cada grupo.
+	ORDER BY – Utilizada para ordenar os registros selecionados com uma ordem especifica.
+	DISTINCT – Utilizada para selecionar dados sem repetição.
+	UNION 	– Combina os resultados de duas consultas SQL em uma única tabela para todas as linhas correspondentes.
+	INSERT	-É usada para inserir um registro (formalmente uma tupla) a uma tabela existente.
+				INSERT INTO Pessoa (id, nome, sexo) VALUE;
+	UPDATE	para mudar os valores de dados em uma ou mais linhas da tabela existente.
+				UPDATE Pessoa SET data_nascimento = '11/09/1985' WHERE id_pessoa = 7
+	DELETE	permite remover linhas existentes de uma tabela.	
+				DELETE FROM pessoa WHERE id_pessoa = 7
+
+---------------------------------------------------------------------
+
+Estrutura do SELECT (p155)
+Genérico:
+	SELECT Campo(s) FROM Origem
+	SELECT Campos, Funções(Campos) FROM Origem
+	SELECT Campos FROM Origem WHERE condições ORDER BY Campos
+
+
+1.  SELECT
+	TOP
+	DISTINCT
+2.  FROM
+3.  WHERE
+4.  GROUP BY 
+5.	 ALL
+7.  HAVING
+8. 	 WITH CUBE
+9.	 WITH ROLLUP		
+10. ORDER BY
+--------------------------------------------------------------------
+
+-- OPERADOR LIKE (p194)
+-- O símbolo percentual (%) aceita qualquer caracter e generaliza a quantidade de caracteres
+-- O símbolo sublinhado (underline)(_) aceita apenas um caracter por símbolo
+
+
+--------------------------------------------------------------------
+•Operadores relacionais
+Operador		Descrição
+=			Igual.
+<> ou !=		Diferentes.
+>			Maior do que
+<			Menor do que
+>=			Maior ou igual a
+<=			Menor ou igual a
+
+
+•Operadores lógicos
+Operador		Descrição
+AND				Combina duas expressões e exige que sejam verdadeiras para que o registro seja apresentado.
+OR				Combina duas expressões e exige que pelo menos uma seja verdadeira para que o registro seja apresentado.
+NOT				Inverte o resultado lógico da expressão à sua direita, ou seja, se a expressão é verdadeira, ele retorna falso, e vice-versa.
+
+
+•Operador Like
+%					= Generaliza qualquer conteúdo
+_ (underline)			= Generaliza um caracter por underline 
+%	texto			= Generaliza qualquer conteúdo que exista após o símbolo
+% texto %			= Contém o conteúdo indicado
+texto %				= O conteúdo começa pelo texto indicado
+% texto				= O conteúdo termina pelo texto indicado
+% [X;Y]				= Entre colchetes [] Ao colocar os colchetes podemos escolher mais de uma letra para o nome.
+NOT LIKE			= Pesquisa dos registros que não possuam o nome.
+
+
+• Operadores aritméticos
+Operador Descrição
++						= Adição
+-						= Subtração
+*						= Multiplicação
+/						= Divisão
+%						= Retorna o resto inteiro de uma divisão
+=						= Atribuição
+------------
++=					= Soma e atribui
+-=					= Subtrai e atribui
+*=					= Multiplica e atribui
+/=					= Divide e atribui
+%=					= Obtém o resto da divisão e atribui
+*/
+
+
+select*from tb_produto
+select*from tb_produto where descricao ='Paquimetro' -- nome completo, quando sabe o valor completo 
+select*from tb_produto where descricao like'p%' -- descricao começa com a inicial p
+select*from tb_produto where descricao like'%s' -- descricao começa com a inicial s
+select*from tb_produto where descricao like'p%s'-- descricao começa com a inicial p e termine com a letra s
+select*from tb_produto where descricao like '%nh%' -- descricao contém nh
+select*from tb_produto where descricao like '_____'-- descricao contém 5 caracteres
+
+select *from tb_empregado
+
+select *from tb_empregado where Nome like '% Maria %' -- a palavra indicada existe em separado
+
+
+select *from tb_empregado where Nome like '%Maria%'-- a palavra indicada pode fazer parte de um nome maior
+
+--Grafia com s ou z 
+select *from tb_empregado where Nome like '%lui[sz]%'
+
+-- segunda letra do nome é A
+select *from tb_empregado where Nome like '_a%'
+
+--Todos começando por A,B,C,D,E
+
+select *from tb_empregado where Nome like'[a-e]%'order by nome
+
+--Todos começando por A,C,G
+select *from tb_empregado where Nome like '[a,c,g]%' order by Nome
+
+--listar os registros
+
+select*from tb_departamento
+select*from tb_departamento where cod_depto<> 4 and cod_depto <>6 and cod_depto<>8
+select*from tb_departamento where cod_depto not in (4,6,8)
+select*from tb_departamento where cod_depto in (4,6,8)
+
+-- concatenação 
+
+select nome+',nasceu na data'+ cast(data_nascimento as varchar(20)) from tb_empregado
+select nome+',nasceu na data'+ cast(cast(data_nascimento as date) as varchar(10)) from tb_empregado
+
+select data_nascimento from tb_empregado
+select cast(data_nascimento as date) from tb_empregado
+select cast(cast(data_nascimento as date)as varchar(10)) from tb_empregado
+
+-  TOP (p180)
+Top (não significa o maior, indica os registros que estão no início - topo - da listagem)
+Especifica que somente um conjunto de N linhas a partir do inicio da listagem será retornado. O conjunto 
+de linhas pode ser um número ou uma porcentagem do total de registros. A expressão TOP pode ser usada 
+em instruções SELECT, INSERT, UPDATE, MERGE e DELETE 
+
+Distinct (sem repetição)
+    De um dos campos ou do conjunto de campos listados
+
+With Ties
+	Quando houver empate em último lugar, apresentar todos, mesmo que exceda a quantiade solicitada
+*/
+
+
+Select *from tb_cliente
+select top 5* from tb_cliente
+select top 5 nome,cidade from tb_cliente
+select top 5 nome, cidade,estado from tb_cliente where estado='sp' order by nome desc
+
+-- listar os 5 funcionarios mais antitgos na empresa do mais novo para o mais antigo
+
+select top 5 nome, data_admissao from tb_empregado
+where data_admissao is not null order by data_admissao asc
+
+--with ties 
+-- Listar o nome e o salário dos empregados
+select nome,salario from tb_empregado where salario is not null order by salario asc 
+select top 5 nome,salario from tb_empregado where salario is not null order by salario asc 
+select top 5 with ties nome,salario from tb_empregado where salario is not null order by salario asc 
+
+-- distinct 
+-- listar os diferentes salários da empresa
+select salario from tb_empregado order by 1
+select salario from tb_empregado where salario is not null order by salario asc
+select distinct salario from tb_empregado where salario is not null order by salario asc
+
+-- listar os 5 pedidos de menor valor do vendedor marcelo
+select *from tb_pedido
+select top 5 VLR_Total from tb_pedido where VLR_Total >0 and codven =2 order by VLR_Total asc
+
+-- listar os codcli dos clientes que compraram em 2017 sem repetição
+
+select distinct codcli from tb_pedido where year (data_emissao)=2017
+
+--listar os codcli dos cliente e os num_pedido dos pedidos de quem comprou em 2017 sem repetição 
+select distinct codcli,num_pedido from tb_pedido where year (data_emissao)=2017
+
+-- Criar uma tabela para os 5 empregados com maisor numero de dependente
+
+if object_id('EmpregadoComMaisDependente') is not null drop table EmpregadoComMaisDependentes
+--
+select top (5) with ties Nome,num_depend from tb_empregado order by 2 desc
+select top (5) with ties Nome,num_depend into EmpregadoComMaisDependente from tb_empregado order by 2 desc
+select * from EmpregadoComMaisDependentes
+
+--Criar uma nova tabela com os 05 produtos mais caros(preco_venda)
+
+if object_id('CincoProdutosMaisCaros') is not null drop table CincoProdutosMaisCaros
+
+select * from tb_produto
+select top (5) with ties cod_produto,Preco_Venda from tb_produto order by preco_venda desc
+select top (5) with ties *into CincoProdutosMaisCaros from tb_produto order by preco_venda desc
+Select * from CincoProdutosMaisCaros
+--- 
+--- resposta ---
+
+-- Criar uma nova tabela com os 5 produtos mais caros (preco_venda)
+-- Listando todos
+select * from tb_produto order by Preco_venda desc
+-- Listando apenas os cinco primeiros pela classificação indicada 
+select top (5) with ties * from tb_produto order by Preco_venda desc
+-- Incluindo em uma nova tabela
+select top(5) with ties * into CopiaProdutosMaisCaros from tb_Produto order by Preco_Venda Desc
+-- Verificação
+select * from CopiaProdutosMaisCaros
+---
+
+
+
+
+-------------------------------------------------------------------------------------
+-- DELETE, TRUNCATE, DROP
+
+-- Delete apaga os registros indicados, mas mantém a numeração automática 
+-- da PK para novos registros
+
+-- Trucante apaga TODOS os e REINICIA a numeração automática da PK
+
+-- Drop exclui registros e estrutura, elimina a tabela como um todo
+
+- Operações com tabelas
+select * from tb_cor order by 2
+
+-- 1) Copia completa
+select * into Cor1 from tb_cor
+select * from cor1
+
+select * from tb_cor order by 2
+select * from cor1 order by 2
+
+exec sp_help tb_cor -- Estrutura
+exec sp_help cor1   -- Estrutura
+
+- 2) Copia da estrutura apenas
+select * into Cor2 from tb_cor where 1=0
+select * from cor2
+
+
+-- 3) Copiar apenas alguns registros e todos os campos
+select * into Cor3 from tb_cor where cor like 'L%'
+select * from cor3
+
+
+-- 4) Copiar alguns campos e alguns registros
+select * from tb_empregado
+select nome,data_admissao into Emp1 from tb_empregado where nome like 'a%'
+select * from Emp1
+
+----------------------------
+-- DELETE
+-- Delete - Apaga apenas registros identificados pelo where ou todos se não houver filtro
+-- Não reinicia o identity da chave primária (PK)
+select * into CopiaCargo1 from tb_cargo
+select * from CopiaCargo1
+
+-- 1) Excluindo alguns registros
+delete from copiacargo1 where cod_cargo in (5,6,7)
+select * from CopiaCargo1
+
+-- 2) Excluir todos os registros 
+--     Apagará todos os registros, mas manterá a sequencia anterior da PK (função identity)
+delete from copiacargo1 -- Todos os resgistros
+select * from CopiaCargo1
+
+-----
+-----------------------------------------------------
+-- TRUNCATE
+-- Apaga TODOS os registros e reinicia a numeração automática (função identity)
+select * into CopiaCargo2 from tb_cargo
+select * from CopiaCargo2
+--
+truncate table copiacargo2
+select * from CopiaCargo2
+--
+insert into copiacargo2 
+values('Mestre Cuca',8000),('Auxiliar MestreCuca',6000)
+
+select * from CopiaCargo2
+
+-----------------------------------------------
+-- DROP
+-- Exclui a tabela por inteiro
+select * into CopiaCargo3 from tb_cargo
+select * from CopiaCargo3
+--
+insert into copiacargo3 
+values('Mestre Cuca',8000),('Auxiliar MestreCuca',6000)
+
+insert into copiacargo3 
+	values('Lavador de Garfos',4000)
+
+select * from CopiaCargo3
+--
+drop table copiacargo3
+select * from CopiaCargo3
+--
+
+select * from sys.tables order by 1 -- Listar todas as tabelas do banco
+
+
 
