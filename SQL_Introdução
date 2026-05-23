@@ -1,3 +1,4 @@
+Primeira consulta
 select*from TB_CARGO
 --select=ler ou calcular
 --essa linha é apenas consulta
@@ -408,7 +409,7 @@ select * from CopiaProdutosMaisCaros
 
 
 
-
+Segunda consulta
 -------------------------------------------------------------------------------------
 -- DELETE, TRUNCATE, DROP
 
@@ -498,5 +499,244 @@ select * from CopiaCargo3
 
 select * from sys.tables order by 1 -- Listar todas as tabelas do banco
 
+---- Terceira Consulta-----
+
+-- FUNCTION (FUNÇÃO)
+Uma função do SQL Server é um objeto de banco de dados que contém um conjunto de instruções SQL 
+projetadas para executar uma tarefa específica. Semelhante às funções em linguagens de programação, 
+elas aceitam argumentos (datas, valores, nomes) de entrada, que serão utilizados nas ações (como um 
+cálculo ou manipulação de dados) e retornam um resultado. Esse resultado pode ser um único valor escalar 
+ou um conjunto de resultados (uma tabela).
+
+-- Natureza das funções
+	-- Funções de Nulabilidade
+	-- Funções de texto
+	-- Funções matemáticas
+	-- Funções de data e hora
+	-- Funções de conversão
+	-- Funções de metadados
+	-- Funções de formatação
+
+select 
+	nome, 
+	left(nome,3) as Iniciais,
+	right(nome, 3 ) as Finais,
+	len(Nome) as QtCaracteres,
+	lower(Nome) as Minusculas,
+	upper (Nome) as Maiusculas 
+from tb_empregado
+
+--- Inversão em cada palavra e do conjunto
+
+select reverse ('Impacta Tecnologia Eletronica')
+select upper (reverse('Impacta Tecnologia Eletronica'))
+
+--Substituição de caracteres
+--Replace (onde, o que trocar, pelo que trocar)
+select replace('josé;carlos;roberto;fernando;marco',';','-') -- ponto e virgula por traço
+select replace('josé;carlos;roberto;fernando;marco',';',' ') as name-- ponto e virgula por traço
+select replace('josé;carlos;roberto;fernando;marco', 'josé','jose') as name-- ponto e virgula por traço
+
+-- na tabela
+select endereco from TB_CLIENTE
+select endereco,replace(endereco, ',','--Num') as ComDoisPontos from tb_cliente
+
+-- Identifica a posição do caracter no texto
+-- charindex(o que procurar, onde localizar)
+select charindex( 'as', 'antonio astrolabio da silva')	-- Sem posição inicial pré-definida, começa localização pela posição 1
+select charindex( 'a', 'antonio da silva',5)				-- Localizar o texto a partir da 5a posição
+-- Divide textos separadas por virgula
+select * from string_split ('Impacta,Tecnologia,Eletronica,Ltda',',')
+
+-- FUNÇÕES MATEMÁTICAS (p244)
+
+-- Exemplos de calculos
+select 
+	4-9+7/8*4 as Inteiro,
+	4.0-9.0+7.0/8.0*4.0 as Decimal,
+	(4.0-9.0)+7.0/(8.0*4.0) as Parenteses
+
+select
+	1000*0.1 as DezPorCento,
+	1000-(1000*0.1) as DescontoDezPorcento,
+	1000*0.9 as DescontoDezPorCento,
+	1000*1.1 as 'Aumento de dez por cento'
+
+select ceiling(149.99)		-- Calcula maior numero inteiro mais próximo
+select ceiling(-149.99)		-- Calcula maior numero inteiro mais próximo
+select floor(1.999)			-- Calcula menor numero inteiro mais próximo
+select floor(-1.999)			-- Calcula menor numero inteiro mais próximo
+
+-- Lista números aleatórios
+select rand() as [Numero_randonico entre 0 e 1] -- Numeros aleatórios
+select abs(-45) as 'Valor Absoluto Do Numero'
+select pi() as ValorPi
+select floor(rand()*(20-5+1)) as [Numero_randonico entre 5 e 20] -- numeros aleatórios
+
+select sqrt(25) as RaizQuadrada	-- Calcula a raiz quadrada
+select power(27.0, 1.0/3.0)			-- Raiz de ordem 3 considerando decimais
+select power(27, 1/3)					-- Raiz de ordem 3 apenas inteiros
+select square(2) as QuadradoValor		-- Calcula o quadrado do valor indicado
+
+-- Round
+-- Retorna um valor numérico, arredondado para o comprimento 
+-- ou precisão especificados
+-- ROUND (numeric_expression , length [ ,function ] )  
+-- round(numero, +-qt casas, arredondar/truncar)
+--		numero = expressão ou campo numérico
+--		+qt casas = arredondamento das casas decimais
+--		- qt casas = arredondamento das casas inteiras
+--		arredondar/truncar = Valor 0 arredonda, diferente de zero trunca
+
+select 10/7 as Inteiros
+select 10.0/7.0 as Decimais
+
+select 10.0/7.0 -- 1.428571
+select Round(10.0/7.0, 2)  as [Arredondamento 2] -- 1.430000
+select Round(10.0/7.0, 2,0)  as [Arredondamento 2] -- 1.430000 -- Não truncar
+select Round(10.0/7.0, 2,1)  as [Truncar] -- 1.420000 -- Truncar
+select cast(Round(10.0/7.0, 2,1) as decimal(20,2))  as [Truncar] -- 1.420000 -- Truncar
+
+-- Exercicios 03
+-- 1) Criar uma consulta que apresente o nome do funcionário, 
+-- salário atual e uma coluna calculada com 10% de aumento sobre 
+-- o salário. Chamar a coluna de Simulação
+
+select * from TB_EMPREGADO
+
+select NOME, SALARIO,SALARIO*1.1 as SIMULAÇÃO
+from tb_empregado
+
+-- 2) Criar uma consulta que apresente o atual total 
+--  -SUM(salario) - de salarios (massa salarial)
+-- e o total considerando um aumento geral de 12,15%
+
+SELECt sum(SALARIO) as total,sum(SALARIO)* 1.1215 as simulacao
+FROM tb_empregado;
+
+
+-- 3) Criar uma consulta que apresente o nome do produto, 
+-- o preço de venda atual e uma coluna calculada com um desconto de 25%
+
+SELECT * fROM TB_PRODUTO
+SELECT DESCRICAO,
+PRECO_VENDA,
+PRECO_VENDA -(PRECO_VENDA*0.25) AS PRECO_DESCONTO
+fROM TB_PRODUTO
+
+-- FUNÇÕES LÓGICAS (pag241)
+
+/*NULL indica que o valor é desconhecido. Um valor nulo é diferente de um valor zero ou vazio. 
+Dois valores nulos não são iguais. As comparações entre dois valores nulos ou entre um valor 
+nulo e qualquer outro valor, retornam desconhecido porque o valor de cada NULL é desconhecido. 
+O valor nulo é eliminado em um operação de agregação de dados ou uma operação de 
+SET (definição de propriedades)*/
+
+-- Identificação de um campo NULL
+			--Is Null
+			--Is Not Null
+
+-- Tratamento de um campo NULL
+			--IsNull = Se o camp for NULL, substitui o NULL por outro conteúdo 
+			--NullIf = Examina 2 campos e retorna um valor NULL se os dois conteúdos forem iguais, se não retorna o primeiro dos campos relacionados
+			--Coalese = Analisa dois conteúdos, se o primeiro for NULL, retorna o segundo, se ambos forem NULL, retorna um valor pré definido
+
+-- Exemplo
+select * from tb_produto
+
+-- Cálculos com (null),(''),(0),('    ')
+select 2+3
+select 2+3+null
+select 2+3+''
+select 2+3+'  ' -- Vário espaços
+select 2*null
+select 2/null
+-- Erros
+select 2/0
+select 2/''
+select 2/'      '  
+--
+select len(null)
+select len(5879879854)
+select len('')
+select len('           ')
+select len('Bom dia')
+---
+
+-- Identificação de um objeto existe/não existente
+if object_id('TesteNull') is not null drop table TesteNull
+
+-- Identificação de um objeto existe/não existente
+if object_id('TesteNull') is not null drop table TesteNull
+
+
+-- Identificação de um objeto existe/não existente
+if object_id('TesteNull') is not null drop table TesteNull
+--
+create table TesteNull(numeros decimal)
+--
+select * from testenull
+insert into testenull values (2),(3),(null),(''),(0),('    ')
+select * from testenull
+
+select sum(numeros) from testenull -- 5
+select avg(numeros) from testenull  -- 1
+select count(numeros) from testenull -- 5
+
+-- Identificação do campo NULL
+-- Is Null / Is Not Null (com espaços = para condições, junto com where)
+select * from tb_produto
+select * from tb_produto where clas_fisc is null
+select * from tb_produto where clas_fisc is not null
+select * from tb_produto where clas_fisc <>''
+select * from tb_produto where clas_fisc =''
+select * from tb_produto where clas_fisc is not null and clas_fisc<>''
+
+--------------------------------
+-- a) ISNULL 
+--  Is Null é diferente de ISNULL  
+--	IsNull (sem espaços = função que verifica o campo e retorna True/False)
+
+--	Se não estiver preenchido, mostre 'Não informado'
+select codcli, Endereco, Bai_cob from tb_cliente
+--
+select Endereco, Bai_cob, isnull(Bai_cob,'Não informado') as [Bairro Corrigido] 
+from tb_cliente
+
+
+--------------------------------
+-- b) NULLIF
+/* Examina 2 campos e retorna um valor NULL se os dois conteúdos forem iguais,
+senão retorna o primeiro dos campos relacionados*/
+
+-- Copiar para uma tabela temporaria chamada #TesteNullif os campos CodFun,	salario, 
+-- premio_mensal dos 5 primeiros registros da tabela tb_empregado
+
+-- Verificar
+select * from tb_Empregado order by salario
+--
+select top(5) codfun,salario,premio_mensal into #TesteNullIf from tb_empregado
+-- Verificar
+select * from #testenullif
+
+-- Adaptar o exemplo alterando os conteúdos originais
+update #testenullif set salario=234 where codfun=1
+update #testenullif set premio_mensal=NULL where codfun=1
+update #testenullif set salario=NULL where codfun=2
+update #testenullif set premio_mensal=528.71 where codfun=2
+update #testenullif set salario=NULL where codfun=3
+update #testenullif set premio_mensal=NULL where codfun=3
+update #testenullif set salario=500 where codfun=4
+update #testenullif set premio_mensal=500 where codfun=4
+update #testenullif set salario=600 where codfun=5
+update #testenullif set premio_mensal=700 where codfun=5
+---
+
+select * from #testenullif order by 1
+
+--  Criar a coluna de comparação
+select codfun,salario, premio_mensal,
+nullif(salario,premio_mensal)
+from #testenullif
 
 
