@@ -739,4 +739,287 @@ select codfun,salario, premio_mensal,
 nullif(salario,premio_mensal)
 from #testenullif
 
+-- b) NULLIF
+/* Examina 2 campos e retorna um valor NULL se os dois conteúdos forem iguais,
+senão retorna o primeiro dos campos relacionados*/
+
+-- Copiar para uma tabela temporaria chamada #TesteNullif os campos CodFun,	salario, 
+-- premio_mensal dos 5 primeiros registros da tabela tb_empregado
+
+-- Verificar
+select * from tb_Empregado order by salario
+--
+select top(5) codfun,salario,premio_mensal into #TesteNullIf from tb_empregado
+-- Verificar
+select * from #testenullif
+
+-- Adaptar o exemplo alterando os conteúdos originais
+update #testenullif set salario=234 where codfun=1
+update #testenullif set premio_mensal=NULL where codfun=1
+update #testenullif set salario=NULL where codfun=2
+update #testenullif set premio_mensal=528.71 where codfun=2
+update #testenullif set salario=NULL where codfun=3
+update #testenullif set premio_mensal=NULL where codfun=3
+update #testenullif set salario=500 where codfun=4
+update #testenullif set premio_mensal=500 where codfun=4
+update #testenullif set salario=600 where codfun=5
+update #testenullif set premio_mensal=700 where codfun=5
+---
+
+select * from #testenullif order by 1
+
+/* Examina 2 campos e retorna um valor NULL se os dois 
+conteúdos forem iguais,
+senão retorna o primeiro dos campos relacionados*/
+
+--  Criar a coluna de comparação
+select codfun,salario, premio_mensal,
+nullif(salario,premio_mensal)
+from #testenullif
+
+-- significa tabela temporaria, ficam escondidas no tempDB, precisamos saber que existem, são apagadas quando fecha o sql
+-- update altera o que há na tabela--comentário em todo o texto
+
+--------------------------------
+-- c) COALESCE (agregar)
+
+-- Examina 2 campos, se o primeiro for NULL, retorna o segundo, 
+-- se ambos forem NULL, retorna um valor pré definido
+
+select * from tb_produto
+--
+select top 4 id_produto, Descricao, Preco_Custo,Preco_Venda 
+	into #CopiaProduto from tb_produto
+--
+select * from #CopiaProduto
+
+-- Ajuste para facilitar o exemplo
+update #CopiaProduto set preco_custo=null where id_produto=2
+update #CopiaProduto set preco_Venda=null where id_produto=3
+update #CopiaProduto set preco_custo=null where id_produto=4
+update #CopiaProduto set preco_Venda=null where id_produto=4
+--
+select * from #CopiaProduto
+
+-- Criar a coluna de comparação
+-- Analisa dois conteúdos, ambos estiverem prenchidos, retorna o primeiro. 
+-- Se o primeiro for NULL, retorna o segundo, se o segundo for nulo retorna o primeiro, 
+-- se ambos forem NULL, retorna um valor pré definido
+select 
+id_produto,Descricao,Preco_Custo,Preco_Venda,
+	coalesce(Preco_Custo,Preco_Venda,123) as ColunaCoalesce
+from #CopiaProduto
+
+select * from tb_empregado
+
+------ FUNCOES DATA E HORARIO (p209)
+--			getdate, sydatetime									-- Obtém a hora/data do windows
+--			dateadd, datediff										-- Fazem cálculos com datas
+--			year,quarter,month,dayofyear,					-- Transformam em número os elementos da data
+--			day,week,weekday,hour,minute,second,		-- Idem acima
+--			datepart, datename									-- Identificam partes da data
+
+-- Tipos de dados para datas/horários (p70)
+-- Date,Datetime,Datetime2,Smalldatetime		 = Tipos de campos para datas
+-- Time, Time(0), Time(1), Time(2), Time(3)   = Tipos de campos para horários
+
+-- Funções básicas
+-- Day ........ dia
+-- Month...... mês
+-- Year......... ano
+-- Getdate()............ ano,mes,dia,hora,minuto,segundo, milesimo segundo (3 algarismos)
+-- Sysdatetime()...... ano,mes,dia,hora,minuto,segundo, milesimo segundo (8 algarismos)
+
+select getdate()as data1, sysdatetime()as data, day(getdate()) as dia, month(getdate()) as mês,year(getdate()) as ano
+
+--calcular o tempo de casa de casa empregado
+
+select nome, year(getdate())-year(data_admissao)as TempoDeCasa from tb_empregado
+
+---Listar os empregados admitidos em 2026 no meses 2,3,4,5,6,7
+select * from tb_empregado where year(data_admissao)=2006 and
+month(data_admissao)between 2 and 7
+
+-- Exercícios
+-- 1) Listar o nome e a data de nascimento dos aniversariantes do mês (atual)
+select nome,data_nascimento from tb_empregado
+where month(data_nascimento)=month(getdate())
+
+
+-- 2) Listar o nome e a data de nascimento dos aniversariantes no dia de hoje (dia e mes atuais)
+select nome,data_nascimento from tb_empregado
+where month(data_nascimento)= day(getdate())and day(data_nascimento)=day(getdate())
+
+--3) criar uma lista de aniversariantes.
+Ordena por mês/dia
+select nome as Nome,
+month(data_nascimento) as mês, day(data_nascimento) as Dia from tb_empregado
+where data_nascimento is not null order by 2,3
+
+-- Diferentes naturezas para campos data e hora (data types)
+-- CAST = Converte uma expressão (digitada ou calculada) de um tipo de dado em outra
+
+-- Datas
+select  
+	getdate() as 'DataHorarioWindows', 
+	sysdatetime() as 'DataHorarioWindowsMaiorPrecisao', 
+	cast(getdate() as date) as 'Conversao_Date', 
+	cast(getdate() as datetime2) as 'Conversao_DateTime2',
+	cast(getdate() as smalldatetime) as 'Conversao_Smalldatetime'
+
+-- Horários
+select 
+	getdate() as 'DataHorarioWindows', 
+	cast(getdate() as time) as 'Conversao_Time',
+	cast(getdate() as time(0)) as 'Conversão_Time(0)',
+	cast(getdate() as time(1)) as 'Conversão_Time(1)',
+	cast(getdate() as time(2)) as 'Conversão_Time(2)',
+	cast(getdate() as time(3)) as 'Conversão_Time(3)'
+	----------------------------------------------------------------------------------------------------------------
+-- DATEPART  - DATEADD - DATENAME - DATEDIFF -  (p212)
+
+-- Função DatePart(UnidadeDeTempo, DataAnalisada)
+-- Função DateAdd(UnidadeDeTempo,QuantidadeDeTempo,DataInicial)
+-- Função DateName(UnidadeDeTempo, DataAnalisada)
+-- Função DateDiff(UnidadeDeTempo,DataMaisAntiga,DataMaisNova)
+
+-- Exemplos
+select datepart(week,getdate())			-- semana do ano em que estamos
+select datepart(week,'2024.12.01')	    -- semana do ano em que estamos
+select nome, data_nascimento, datepart(week,data_nascimento) from tb_empregado order by 3 
+select nome, data_nascimento, datepart(week,data_nascimento)  from tb_empregado 
+where datepart(week,data_nascimento)=37
+
+select 
+	num_pedido,
+	Data_Emissao, 
+	day(Data_Emissao) as 'Dia',
+	month(Data_Emissao) as 'Mes',
+	year(Data_Emissao) as 'Ano'
+from tb_Pedido
+
+select
+	num_pedido,
+	Data_Emissao,
+	datepart(day,data_emissao) as 'Dia do Mes',
+	datepart(quarter,Data_Emissao) as 'Trimestre',
+	datepart(week,Data_Emissao) as 'SemanaDoAno-SQL',
+	datepart(iso_week,Data_Emissao) as 'SemanaDoAno-ISO',
+	datepart(weekday,Data_Emissao) as 'Dia da Semana',
+	datepart(hour,Data_Emissao) as 'Hora',
+	datepart(minute,Data_Emissao) as 'Minuto'
+from tb_Pedido
+
+select
+	num_pedido,
+	Data_Emissao,
+	datename(week,Data_Emissao) as 'Número da semana no ano',
+	datename(quarter,Data_Emissao) as 'Trimestre do ano',
+	datename(weekday,Data_Emissao) as 'NomeDiaSemana',
+    datename(dayofyear,Data_emissao) as 'Dia do Ano',
+    datename(month,Data_emissao) as 'NomeMes'
+from tb_Pedido
+
+----------------------------------------------------------------------------------------------------------------
+-- DATEADD (p216)
+-- Função DateAdd(UnidadeDeTempo,QuantidadeDeTempo,DataInicial)
+-- Datas futuras ou passadas
+
+	-- Cálculo
+select 
+	getdate() as [Data atual], 
+	getdate()+10 as Mais10dias,
+	getdate()-10 as Menos10Dias
+
+-- Funções
+select 
+	getdate() as [Data atual], 
+	dateadd(day,+45,getdate()) as [+45 dias],
+	dateadd(day,-45,getdate()) as [-45 dias],
+	dateadd(month,+16,getdate()) as [+16 meses],	
+	dateadd(month,-16,getdate()) as [-16 meses],
+	dateadd(week,8,getdate()) as [+8 semanas],
+	dateadd(week,-15,getdate()) as [-15 semanas],
+	dateadd(year,2,getdate()) as [+2 anos],
+	dateadd(year,-2,getdate()) as [-2 anos]
+
+	--Modo de apresentação das datas--- 
+	select
+	data_emissao as Padrão,
+	cast(data_emissao as date)as[Conversão de Datatypes],
+	format(data_emissao,'d','en-gb') as[Great Britain English]
+	from TB_PEDIDO
+
+-- DATEDIFF
+-- Função DateDiff(UnidadeDeTempo,DataMaisAntiga,DataMaisNova)
+--  Diferença de datas
+
+-- Cálculo
+select
+	getdate()-'2000.01.01' as DiasCalculo,
+	cast(getdate()-'2000.01.01' as int) as DiasComoInteiro
+
+-- Funções
+select 
+	Nome, Data_Admissao,
+	-- Subtração direta o resultado será em dias
+	getdate()- data_admissao as SubtracaoDireta,
+	datediff(day,Data_Admissao,getdate()) as Dias,
+	datediff(week,Data_Admissao,getdate()) as Semanas,
+	datediff(month,Data_Admissao,getdate()) as Meses,
+	datediff(year,Data_Admissao,getdate()) as Anos,
+	datediff(hour,Data_Admissao,getdate()) as Horas,
+	datediff(minute,Data_Admissao,getdate()) as Minutos,
+	datediff(second,Data_Admissao,getdate()) as Segundos
+from tb_empregado 
+
+----------------------------------------------------------------------------------------------------------------
+-- EOMONTH (p221)
+
+-- EOMONTH(DataInicial,+-QtdMeses) -- end of month
+-- Data completa (dia, mês, ano) do último dia do mês. 
+-- Identifica o último dia do mes da data indicada
+select 
+	eomonth(getdate(),0) as [Data do último dia do mês um uso],
+	eomonth(getdate(),15) as [Data do último dia mês daqui a 15 meses],
+	eomonth(getdate(),-14) as [Data do último dia mês, 14 meses passados]
+
+-------------------------------------------------------------------------------------------------
+-- Exercicios 06
+-- 1) Listar o nome do funcionario, data de admissao, salario e uma coluna calculada com
+--     aumento de 10% para quem tem entre 20 e 25 anos de trabalho. Atribuir uma legenda 
+para a coluna calculada
+
+ SELECT 
+  NOME, 
+  YEAR(GETDATE()) - YEAR(data_admissao) AS TempoDeCasa,
+  SALARIO,
+  SALARIO * 1.1 AS SIMULACAO
+FROM tb_empregado
+WHERE YEAR(GETDATE()) - YEAR(data_admissao) BETWEEN 20 AND 25
+ORDER BY TempoDeCasa DESC
+
+
+-- 2) Listar na mesma select SEU nome, a SUA data de nascimento, SUA idade em anos, meses, 
+--     semanas, dias, horas e minutos. Incluir as legendas correspondentes para cada coluna
+select * from TB_EMPREGADO
+select  
+	Nome, Data_Admissao,
+	-- Subtração direta o resultado será em dias
+	getdate()- data_admissao as SubtracaoDireta,
+	datediff(day,Data_Admissao,getdate()) as Dias,
+	datediff(week,Data_Admissao,getdate()) as Semanas,
+	datediff(month,Data_Admissao,getdate()) as Meses,
+	datediff(year,Data_Admissao,getdate()) as Anos,
+	datediff(hour,Data_Admissao,getdate()) as Horas,
+	datediff(minute,Data_Admissao,getdate()) as Minutos,
+	datediff(second,Data_Admissao,getdate()) as Segundos
+from tb_empregado 
+
+-- 3) Quando será a aposentadoria de cada funcionário (30 anos)
+-- 4) Qual o funcionario mais antigo (data de admissao)
+-- 5) Aniversariantes do dia de hoje
+-- 6) Listar funcionários que por coincidência tenham aniversário na sua data de admissão (dia e mês)
+-- 7) Aumento de 10% para quem tem mais de 10 anos de trabalho
+
 
