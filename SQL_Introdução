@@ -1811,3 +1811,48 @@ from tb_Pedido
 group by year(data_emissao),month(data_emissao)
 with rollup
 order by 
+--
+-- 5) com três critérios de agrupamento codven, year, month
+select 
+	codven as Vendedor,
+	year(data_emissao) as AnoEmissao, 
+	month(data_emissao) as MesEmissao, 
+	sum(vlr_total) as Faturamento
+from tb_Pedido 
+group by codven,year(data_emissao),month(data_emissao), codven
+with rollup
+order by 1,2 ,3
+
+--------------------------------------------------------------------------------------
+-- 5) GROUP BY com WITH CUBE
+-- Produz todas as combinações das colunas especificadas (a rede completa de 2^n) mais o total geral. 
+-- Usado para análise multidimensional em cada fatia
+
+-- Calcular o total do faturamento por situacao, ano e mês
+select 
+	year(data_emissao) as Ano, 
+	month(data_emissao) as Mes, 
+	sum(vlr_total) as Faturamento
+from tb_Pedido 
+group by year(data_emissao),month(data_emissao)
+with cube
+order by 1,2
+
+
+--  Três critérios: Listar os totais de faturamento por ano e mês e por empregado, 
+--    com subtotais para os empregados e para os anos e meses
+select
+	situacao,
+	codven as Empregado,
+	year(data_emissao) as ano,
+	month(data_emissao) as mes,
+	sum([vlr_total]) as Total 
+from tb_Pedido
+group by year(data_emissao),month(data_emissao),codven, situacao
+with cube
+
+
+
+
+
+
