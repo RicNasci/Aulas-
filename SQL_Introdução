@@ -1299,6 +1299,515 @@ from tb_fornecedor
     inner join tb_fornecedor on tb_produto.ID_produto=tb_fornecedor.cod_fornecedor
 order by 1,2
 
+------------03/06---------
+--listar o nome do fornecedor e os nomes dos produtos que ele fornece
+-- Ordenar por produto e fornecedor
+
+select
+	tb_pedido.num_pedido,
+	tb_cliente.nome as Cliente,
+	tb_vendedor.nome as Vendedor
+from tb_vendedor
+inner join tb_pedido on tb_vendedor.codven=tb_pedido.codven
+inner join tb_cliente on tb_pedido.codcli=tb_cliente.codCli
+
+tentativa 
+select
+      tb_pedido.num_pedido,
+      tb_cliente.nome as Cliente,
+      tb_vendedor.nome as Vendedor
+from tb_vendedor
+inner join tb_pedido on tb_vendedor.codven=tb_pedido.codven
+inner join tb_cliente on tb_pedido.codcli=tb_cliente.codCli
 
 
+-- Listar o nomes das cidades e os nomes do produtos vendidos para elas. Sem repetição
+-- cliente-pedido-itenspedido-produto. Classificar por cidade e por nome do produto
+select * from tb_pedido -- 11.322
+select * from tb_itenspedido -- 71.167
 
+-- Sem repetição e sem valores null ou vazios --- resposta -- 
+select distinct
+	cidade,
+	descricao
+from tb_cliente 
+	inner join tb_pedido on tb_cliente.codcli=tb_pedido.codcli 
+	inner join tb_itenspedido on tb_pedido.num_pedido=tb_itenspedido.num_pedido
+	inner join tb_produto on tb_produto.id_produto=tb_itenspedido.id_produto
+where cidade is not null and cidade <>''  
+order by 1,2 -- 11.082 ---- refazer --- 
+
+--listar o nome dos produtos que foram vendidos em 2017
+----tentativa-- 
+select *from tb_produto
+select distinct
+	descricao as produto
+	year,data_emissao, as ano
+    month,data_emissao, as mês
+from tb_produto
+inner join tb_produto on tb_itenspedido.cod_produto=tb_produto.cod_produto 
+inner join tb_itenspedido on tb_pedido.num_pedido=tb_itenspedido.num_pedido
+inner join tb_produto on tb_produto.id_produto=tb_itenspedido.num_pedido
+where data_entrega is => 2017  
+order by 1,2 -- 11.082 ---- refazer  ------- 
+------
+
+- Listagem 4 -  resposta --- 
+select distinct
+	descricao as Produto,
+	year(data_emissao)  as ano,
+	month(data_emissao) as mes
+from tb_produto 
+	inner join tb_itenspedido on tb_produto.id_produto=tb_itenspedido.id_produto
+	inner join tb_pedido on tb_itenspedido.num_pedido=tb_pedido.num_pedido
+where year(data_emissao)=2017 and  month(data_emissao) =11 -- 65
+order by 1
+------inner joing refazer todo o capitulo ---- 
+----- left joy list todo mundo a sua esquerda ----  
+
+-- LEFT JOIN (p278)
+-- A cláusula LEFT JOIN ou LEFT OUTER JOIN permite obter todos os dados 
+-- da tabela à esquerda e os relacionados da tabela da direita
+-- Caso não exista um valor relacionados na direita o campo será preenchido com NULL
+
+-- 1) Listar os nomes dos empregados que tenham dependentes 
+--     (apenas o nome, sem repetição)  
+select
+	tb_empregado.nome as empregado,
+	tb_dependente.nome as dependente
+from tb_empregado inner join tb_dependente
+on tb_empregado.codfun=tb_dependente.codfun
+order by 1 -- 50
+
+-- 2) Listar apenas os nomes dos empregados que NÃO tenham dependentes 
+-- (apenas o nome, sem repetição)  
+select
+	tb_empregado.nome as Empregado,
+	tb_dependente.nome as Dependente
+from tb_empregado left join tb_dependente
+on tb_empregado.CodFun = tb_dependente.CodFun
+where tb_dependente.nome is  null
+order by 1
+
+-- 3) Listar apenas os nomes dos empregados que NÃO tenham dependentes 
+-- (apenas o nome, sem repetição)  
+select
+	tb_empregado.nome as Empregado
+from tb_empregado left join tb_dependente
+on tb_empregado.CodFun = tb_dependente.CodFun
+where tb_dependente.nome is  null
+order by 1
+
+-----
+
+-- 4) Listar os cargos que não tenham empregados -- tentativa
+select
+cargo,
+nome
+	tb_empregado.cad_cargo as Cargo
+	from tb_empregado left join tb_cargo
+	on tb_empregado.Cod_cargo = tb_cargo.Cod_Cargo
+	where nome is  null
+
+	---- --  resposta --- 
+	select 
+	cargo,
+	nome
+from tb_cargo left join tb_empregado 
+on tb_empregado.cod_cargo=tb_cargo.cod_cargo
+where nome is null
+
+
+-- 5) Listar empregados que não tenham cargos
+--tentativa-- 
+select 
+	cargo,
+	nome
+from tb_empregado left join tb_cargo 
+on tb_empregado.cod_cargo=tb_cargo.cod_cargo
+where cargo is null
+--resposta--
+select 
+	cargo,
+	nome
+from tb_empregado left join tb_cargo 
+on tb_empregado.cod_cargo=tb_cargo.cod_cargo
+where cargo is null
+
+- RIGHT JOIN (p279)
+-- A cláusula RIGHT JOIN ou RIGHT OUTER JOIN permite obter todos os dados 
+--   da tabela declarada à DIREITA quando existirem os correspondentes 
+--   na tabela declarada à ESQUERDA, se não existirem será 
+--   incluido o termo NULL
+
+--1)  Listar os produtos que nunca foram vendidos
+select 
+	descricao as NomeProd,
+	tb_itenspedido.id_produto
+from tb_itenspedido right join tb_produto 
+on tb_produto.id_produto=tb_itenspedido.id_produto
+where tb_itenspedido.id_produto is null
+order by 2
+
+
+-- 2) Listar os departamentos sem funcionarios
+select 
+	depto,
+	nome 
+from tb_empregado right join tb_departamento 
+on tb_empregado.cod_depto=tb_departamento.cod_depto
+where nome is null
+
+-- 4) Liste os produtos que estão cadastrados na tabela tb_produto e que não estão
+-- em nenhum pedido da tabela tb_itenspedido e, também, retorne os produtos
+-- vendidos
+-- Inner
+
+select distinct tb_produto.cod_produto as Produto, tb_itenspedido.cod_produto as Itens 
+from tb_itenspedido inner join tb_produto on tb_itenspedido.cod_produto=tb_produto.cod_produto
+
+-- Left
+select distinct tb_produto.cod_produto as Produto, tb_itenspedido.cod_produto as Itens 
+from tb_itenspedido left join tb_produto on tb_itenspedido.cod_produto=tb_produto.cod_produto
+
+-- Right
+select distinct tb_produto.cod_produto as Produto, tb_itenspedido.cod_produto as Itens 
+from tb_itenspedido right join tb_produto on tb_itenspedido.cod_produto=tb_produto.cod_produto
+
+-- campo que se repetem nas duas -- chaves primaria ou estrangeira 
+-----------------------------------------------------------------------------------------
+-- FULL JOIN (p280)
+-- A cláusula FULL JOIN ou FULL OUTER JOIN retornam todas as linhas da tabela
+-- à esquerda de JOIN e da tabela à direita (como no inner). Quando não 
+-- houver correspondência em qualquer uma das tabelas o campo será prenchido 
+-- com NULL. Apresenta o resultado de um left join + right join
+
+-- 1) Listar TODOS os os empregados e TODOS os departamentos
+select 
+	depto,
+	nome
+from tb_departamento full join tb_empregado 
+on tb_departamento.cod_depto=tb_empregado.cod_depto
+
+-- 2) Listar TODOS os empregados e TODOS os cargos
+select 
+	nome,
+	cargo
+from tb_empregado full join tb_cargo 
+on tb_cargo.cod_cargo = tb_empregado.cod_cargo
+
+-- 3) Listar TODOS os clientes e seus pedidos
+select 
+		Nome,
+		num_pedido 
+from tb_cliente full join tb_pedido 
+on tb_cliente.codcli=tb_pedido.codcli
+order by 2 -- 11.323
+
+-- Empresa de viagens turísticas, com vários destinos D1, D2, D3 e para 
+-- cada destino acomodações com níveis de conforto A, B, C
+--D1 - A				D2 - A					D3 - A
+--D1 - B				D2 - B					D3 - B
+--D1 - C				D2 - C					D3 - C
+
+--agencia de viagens 
+create table #ViagensTuristicas
+(destino char(2))
+--
+insert into #ViagensTuristicas values
+('D1'),('D2'),('D3')
+--
+select * from #ViagensTuristicas
+---
+create table #Conforto
+(Nivel varchar(15))
+--
+insert into #Conforto values
+('Simples'),('Luxo'),('Superluxo')
+--
+select *from #Conforto
+select * from #ViagensTuristicas
+----
+ select 
+ destino,
+ nivel
+ from #conforto cross join #ViagensTuristicas
+ order by 1,2
+
+ ----------------------------------------------------------------------------------------
+--SELF JOIN (p276)
+-- Uma self join (autojunção) é simplesmente a união (join) de uma tabela com 
+-- ela mesma. Não há palavra-chave SELF JOIN, apenas é escrita uma junção comum 
+-- onde ambas as tabelas envolvidas na junção são a mesma tabela. 
+
+-- Necessário usar um alias para cada utilização da tabela, caso contrário, 
+-- o nome da tabela seria ambíguo. É útil quando você deseja correlacionar 
+-- pares de linhas da mesma tabela, por exemplo, um relacionamento hierarquico.
+
+select * from tb_empregado
+select codfun,nome, cod_supervisor from tb_empregado
+
+-- Exemplo 1
+create table #Funcionarios 
+(id int identity primary key, 
+nome varchar(50),
+id_supervisor int) 
+
+insert into #Funcionarios values
+('Pedro Henrique',6),
+('Lucas da Silva',6),
+('Luana Gabriela',7),
+('Renato Lazuna',6),
+('Rafaela Barrosa',7),
+('Arline da Costa',9),
+('Giseli Pascoa',9),
+('Renan Pereira',6),
+('D. Pedro',Null)
+
+select * from #Funcionarios
+
+select
+	f1.nome as Supervisor,
+	f2.nome as #Funcionario
+from
+	#funcionarios f1 inner join #funcionarios f2
+	on f1.id = f2.id_supervisor
+order by f1.id
+
+select
+   sum(qtd_real) as Quantidade,
+   avg(preco_venda) as MediaPrecoVenda,
+   max(preco_venda) as ProdutoMaisCaro,
+   min(preco_venda) as produtoMaisBarato,
+   count(id_produto) as Contagemprodutos
+from tb_produto
+where preco_venda<>0 and qtd_real>0
+
+-- Calcular os indicadores para o mês de janeiro de 2016
+select
+	sum([vlr_total]) as FaturamentoTotal,
+	avg([vlr_total]) as FaturamentoMédio,
+	count([num_pedido]) as [nº de pedidos],
+	max([vlr_total]) as [Valor maior pedido],
+	min([vlr_total]) as [Valor menor pedido]
+from tb_Pedido
+where year(data_emissao)=2016 and month(data_emissao)=01
+and vlr_total<>0 and vlr_total is not null
+-----
+-- Calcular por ano
+select
+	year(data_emissao) as Ano,
+	sum([vlr_total]) as total,
+	avg([vlr_total]) as média,
+	count([num_pedido]) as [nº de pedidos],
+	max([vlr_total]) as [maior pedido],
+	min([vlr_total]) as [menor pedido]
+from tb_Pedido 
+where Vlr_Total<>0 
+group by year(data_emissao)
+order by 1
+
+----
+select
+	month(data_emissao) as month,
+	sum([vlr_total]) as total,
+	avg([vlr_total]) as média,
+	count([num_pedido]) as [nº de pedidos],
+	max([vlr_total]) as [maior pedido],
+	min([vlr_total]) as [menor pedido]
+from tb_Pedido 
+where Vlr_Total<>0 
+group by month(data_emissao)
+order by 1
+
+select
+	year(data_emissao) as Ano,
+	month(data_emissao) as month,
+	sum([vlr_total]) as total,
+	avg([vlr_total]) as média,
+	count([num_pedido]) as [nº de pedidos],
+	max([vlr_total]) as [maior pedido],
+	min([vlr_total]) as [menor pedido]
+from tb_Pedido 
+where Vlr_Total<>0 
+group by year(data_emissao), month(data_emissao)
+order by 1,2
+---- 
+-- Calcular quantidade vendida por ano e por produto
+select 
+	year(data_entrega) as AnoVenda,
+	descricao as NomeProduto,
+	sum([vlr_total]) as total,
+from tb_produto inner join tb_itenspedido 
+on tb_produto.cod_produto=tb_itenspedido.cod_produto
+group by descricao, year(data_entrega)
+order by 1,3 desc
+
+
+-- Calcular quantidade vendida por ano e por produto
+select 
+	year(data_entrega) as AnoVenda,
+	descricao as NomeProduto,
+	sum(quantidade) as QuantidadeVendida
+-----------------------------------------
+from tb_produto inner join tb_itenspedido 
+on tb_produto.cod_produto=tb_itenspedido.cod_produto
+-----------------------------------------
+group by descricao, year(data_entrega)
+order by 1,3 desc
+
+-- Calcular faturamento por produto por mês
+select
+	descricao as NomeProduto,
+	month(data_entrega) as MesEntrega,
+	sum(quantidade*pr_unitario) as FaturamentoSemFormato,
+	format(sum(quantidade*pr_unitario), 'C2', 'pt-br') as FaturamentoComFormato
+from tb_itenspedido inner join tb_produto 
+on tb_produto.id_Produto=tb_itenspedido.id_produto
+group by descricao, month(data_entrega)
+order by 1,2
+-----------------para consultas a banco de dados, usar fontes de informações Format sql ----- 
+-----------------dentro do SQL clica na palavrs e usa o comando F1--------------------------- 
+-----------------exercício----------
+--Calcular o total de vendas por nome do cliente e por ano------ tentativa
+
+select 
+	nome as Nomecliente,
+	year(data_emissao) as Ano,
+	sum(vlr_total) as Faturamento
+	from tb_cliente inner join tb_pedido on tb_cliente.codcli=tb_pedido.codcli
+-----------------------------------------
+group by nome year(data_emissao)
+order by 1 asc, 3 desc
+------
+-- Calcular total de venda (vlr_total) por nome do cliente e por ano -- resposta 
+select 
+	nome as NomeCliente,
+	year(data_emissao) as Ano,
+	sum(vlr_total) as Faturamento
+from tb_pedido inner join tb_cliente on tb_cliente.codcli=tb_pedido.codcli
+group by nome, year(data_emissao)
+order by 1 asc, 3 desc
+---- calc ------
+
+-- 10) Calcular o percentual do faturamento por vendedor sobre o total geral
+select
+	tb_vendedor.nome,
+	sum(tb_pedido.vlr_total) as FaturamentoEmpregado, -- Total do empregado
+	sum(tb_pedido.vlr_total)/(select sum(vlr_total) from tb_pedido) as PercentualSobreTotal -- Total do empregado/Total geral (da base toda)
+------------------------------------------------------------------------
+from tb_vendedor inner join tb_Pedido 
+on tb_vendedor.codven=tb_pedido.codven
+------------------------------------------------------------------------
+group by tb_vendedor.nome
+order by 3 desc
+------------------------------------------------------------------------
+-- GROUP BY com  ALL
+-- a) Calcular a soma do valor total agrupando pelo nome do cliente, SEM a cláusula ALL
+--     Observar a quantidade de registros e o resultado na coluna Faturamento
+--     para janeiro de 2016
+-- Sem ALL
+select 
+	c.codcli, 
+	c.nome, 
+	sum(p.vlr_total) as TotalComprado
+------------------------------------------------------------------------------
+from tb_pedido p join tb_cliente c on p.codcli = c.codcli
+------------------------------------------------------------------------------
+where p.data_emissao between '2016.1.1' and '2016.1.31'
+group by c.codcli, c.nome -- 78 registros
+
+-- Com ALL
+-- Calcular a soma do valor total agrupando pelo nome do cliente, COM a cláusula ALL
+-- Observar a quantidade de registros e o resultado na coluna Faturamento
+select 
+	c.codcli,
+	c.nome, 
+	sum(p.vlr_total) as TotalComprado
+------------------------------------------------------------------------------
+from tb_pedido p join tb_cliente c on p.codcli = c.codcli
+------------------------------------------------------------------------------
+where p.data_emissao between '2016.1.1' and '2016.1.31'
+group by ALL c.codcli, c.nome  -- 561 registros
+
+-- GROUP BY com  HAVING
+-- Having filtra o resultado do group by
+-- Where filtra o que será processado
+
+-- Calcular indicadores por mês com where e having
+select
+	month(data_emissao) as Mes,
+	sum([vlr_total]) as total,
+	avg([vlr_total]) as média,
+	count([num_pedido]) as [nº de pedidos],
+	max([vlr_total]) as [maior pedido],
+	min([vlr_total]) as [menor pedido]
+from tb_Pedido 
+--where month(data_emissao) >=7
+group by month(data_emissao)
+--having sum([vlr_total]) >= 2500000
+order by 1,2
+
+-- Calcular o faturamento dos clientes com razão social começando 
+-- por a ou f ou g e soma de vlr_total >=30000
+
+select --- tentativa 
+	nome,
+	sum(vlr_total)
+from tb_pedido inner join tb_cliente on tb_cliente.codcli =tb_pedido.codcli
+where nome  like'[a,f,g]%'
+group by nome
+having sum([vlr_total]) >= 30000
+order by 2 desc
+------
+select
+nome,
+	sum(vlr_total) 
+from tb_pedido inner join tb_cliente on tb_cliente.codcli=tb_pedido.codcli
+where nome like '[a,f,g]%' -- Filtra as informações que serão utilizadas
+group by nome
+having sum(vlr_total) >=30000  -- Filtrar o resultado dos cálculos
+order by 2 desc
+
+-- 4) GROUP BY com WITH ROLLUP
+
+-- 1) Calcular o total do faturamento por ano e mês
+--     SEM rollup. Observe a disposição dos resultados
+select 
+	year(data_emissao) as Ano, 
+	sum(vlr_total) as Faturamento
+from tb_Pedido 
+group by year(data_emissao)
+order by 1,2
+----     COM rollup. Observe a disposição dos resultados
+select 
+	year(data_emissao) as Ano, 
+	sum(vlr_total) as Faturamento
+from tb_Pedido 
+group by year(data_emissao)
+with rollup
+
+-- 2) Calcular o percentual do faturamento por 
+--		vendedor sobre o total geral
+select
+	 tb_vendedor.nome,
+	sum(tb_pedido.vlr_total) as FaturamentoEmpregado,														-- Total do empregado
+	sum(tb_pedido.vlr_total)/(select sum(vlr_total) from tb_pedido) as PercentualSobreTotal -- Total do empregado/Total geral (da base toda)
+------------------------------------------------------------------------
+from  tb_vendedor inner join tb_Pedido 
+on tb_vendedor.codven=tb_pedido.codven
+------------------------------------------------------------------------
+group by  tb_vendedor.nome
+with rollup
+-- order by 3 desc
+
+-- 4) Calcular o total do faturamento por ano e mês
+--     Dois critérios de agrupamento
+select 
+	year(data_emissao) as Ano, 
+	month(data_emissao) as Mes, 
+	sum(vlr_total) as Faturamento
+from tb_Pedido 
+group by year(data_emissao),month(data_emissao)
+with rollup
+order by 
