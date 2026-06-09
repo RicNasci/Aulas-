@@ -1850,6 +1850,612 @@ select
 from tb_Pedido
 group by year(data_emissao),month(data_emissao),codven, situacao
 with cube
+-----
+próxima aula
+
+----------rever aula do dia 05/06/2026----- 
+-- Subconsultas não correlacionadas
+
+Por oferecer diversas formas de obter resultados, as subconsultas
+eliminam a necessidade de utilização das cláusulas JOIN e UNION de
+maior complexidade.
+
+Uma instrução que possui uma subconsulta não apresenta muitas diferenças
+de performance em relação a uma versão semanticamente semelhante que
+não possui a subconsulta. No entanto, uma JOIN apresenta melhor
+desempenho nas situações em que é necessário realizar testes de
+existência
+
+Nem sempre as associações podem reproduzir os efeitos de uma subconsulta
+
+Ao comparar subqueries e associações (JOINS), é possível constatar que as associações
+são mais indicadas para verificação de existência, pois apresentam desempenho
+melhor nesses casos. 
+
+Também podemos verificar que, ao contrário das subqueries,
+as associações não atuam em listas com um operador de comparação modificado por
+ANY ou ALL, ou em listas que tenham sido introduzidas com IN ou EXISTS.
+
+A visualização do aninhamento e da organização da query é mais simples em uma
+subquery, enquanto que, em uma consulta com diversas associações, a visualização
+pode ser complicada
+
+Uma consulta aninhada em uma instrução SELECT, INSERT, DELETE ou UPDATE é
+chamada de subquery (subconsulta) ou consulta interna. Isso ocorre quando usamos 
+um SELECT dentro de outro SELECT ou INSERT ou UPDATE ou DELETE
+ 
+Em alguns casos, pode ser que lidemos com questões muito complexas para serem
+respondidas com associações, então, será mais indicado usar subconsultas. isso
+porque a visualização do aninhamento e da organização da consulta é mais simples
+em uma subconsulta, enquanto, em uma consulta com diversas associações, a
+visualização pode ser complicada. além disso, nem sempre as associações podem
+reproduzir os efeitos de uma subconsulta.
+
+O primeiro select é chamado de query ou consulta externa, os demais de 
+subquery ou consultas internas. O primeiro select é ligado com o segundo 
+pelos operadores:
+	IN, NOT IN, >,>=,<,<=,<>, EXISTS, NOT EXISTS, ALL, SOME/ANY
+*/
+
+--------------------------------------------------------------------------------------
+--1) Listar os produtos com preco_custo acima da média
+select * from tb_produto
+--
+select avg(preco_custo) from tb_produto
+
+select * from tb_produto where preco_custo >1.724975
+
+select * from tb_produto where preco_custo > (select avg(preco_custo) from tb_produto)
+----
+----2)calcular o percentual de cada pedido sobre o total faturado em 2016--
+--subconsulta é um cosulta que calcula os dados e passa a informação para consulta principal-- 
+--
+select sum(vlr_total) from tb_pedido where year(data_emissao)=2016 -- Total do ano: 4033950.28
+
+select 
+	num_pedido,	
+	vlr_total as TotalPedido,
+	vlr_total/(select sum(vlr_total) from tb_pedido where year(data_emissao)=2016) as PercentualPedido
+from tb_pedido
+
+---listar o nome dos empregados que tem um cargo começando pela letra c --  tentativa -  
+select nome,cod_cargo from tb_empregado
+where cod_cargo in (select cod_cargo from tb_cargo where cargo like 'C%')
+order by 1
+
+--------------------------------------------------------------------------------------
+-- 3) Listar os nomes dos empregados que tem um cargo começando pela letra C
+select cod_cargo from tb_cargo where cargo like 'C%'
+--
+select nome,cod_cargo from tb_empregado 
+where cod_cargo in (select cod_cargo from tb_cargo where cargo like 'C%')
+order by 1
+
+--------------------------------------------------------------------------------------
+-- 4) Listar clientes que compraram em janeiro de 2019
+--      in/not in(está ou não está na lista)
+select 
+		distinct 
+		Nome, 
+		tb_cliente.codcli 
+from tb_Cliente where codcli IN
+(select distinct codcli from tb_Pedido 
+	where data_emissao between '2019.01.01' and '2019.01.31')
+order by 2
+
+--------------------------------------------------------------------------------------
+-- 5) Listar as vendas do vendedor Marcelo no período  '2019.01.01' a '2019.01.31'
+
+drop table if exists #CopiaPedido
+select Nome, codven from tb_vendedor -- Marcelo é código 2
+--
+select * into #CopiaPedido from tb_pedido
+--
+select * from #CopiaPedido
+where data_emissao between '2019.01.01' and '2019.01.31'
+          and codven = (select codven from tb_vendedor  where nome = 'marcelo')
+
+--------------------------------------------------------------------------------------
+-- Subconsultas correlacionadas
+-- 1) Listar o nome, o salario atual e o salario inicial de cada funcionarios
+-- Uma subquery que utiliza o (os) registro(s) listados pela consulta principal
+
+-- Listar o nome do empregado, seu salario atual e o salario inicial
+-- Verificação
+select cod_cargo, salario_inic from tb_cargo
+--
+select 
+	nome, 
+	cod_cargo, 
+	salario as SalarioAtualEmpregado,
+	-- Para cada cod_cargo é apresentado um salario_inic
+	(select salario_inic from tb_cargo where cod_cargo=tb_empregado.cod_cargo)  as SalarioInicial
+from tb_empregado 
+order by cod_cargo
+
+---------------------------------------------------------------------
+-- 2) Consulta correlacionada
+-- Uma subquery que utiliza o (os) registro(s) listados pel consulta principal
+drop table if exists #CopiaEmpregado
+select Nome, codfun,cod_cargo, Salario into #CopiaEmpregado from tb_Empregado
+select * from #CopiaEmpregado
+
+select 
+	codfun, 
+	nome, 
+	cod_cargo,
+	Salario as SalarioAtual,	
+  (select salario_inic from tb_cargo where cod_cargo = #CopiaEmpregado.cod_cargo) as SalarioInicial
+from #Copiaempregado 
+
+--------------------------------------------------------------------------------------
+-- Update e delete com subconsulta
+--		Ao utilizarmos a instrução update em uma subconsulta, será possível atualizar
+--		linhas de uma tabela com informações provenientes de outra tabela. 
+--		Para isso, na cláusula where da instrução update, em vez de usar como critério para a operação
+--		de atualização a origem explícita da tabela, basta utilizar uma subconsulta.
+
+--  Aumento de 10% nos salários dos empregados do departamento de c.p.d
+--  Listar nome do funcionario, salario atual e salario modificado
+
+-- a) Apenas listagem
+select 
+	nome,
+	cod_depto,
+	salario as SalarioAtual,
+	salario*1.10 as SalarioModificado,
+   convert(decimal,(salario *1.10),2)  as SalarioModificado
+from tb_empregado
+where cod_depto =(select cod_depto from tb_departamento where depto = 'c.p.d.')
+
+-- b) update
+drop table if exists CopiaEmpregado1
+select * into CopiaEmpregado1 from tb_empregado
+select * from CopiaEmpregado1
+--
+update CopiaEmpregado1 set salario = salario * 1.10
+where cod_depto =(select cod_depto from tb_departamento where depto = 'c.p.d.')
+--
+select Nome, cod_depto,salario from copiaempregado1 where cod_depto=2 order by cod_depto
+
+-- c)) delete
+select * from tb_vendedor -- Vendedor Marcelo tem o código 2
+drop table if exists #CopiaPedido2
+select * into #CopiaPedido2 from tb_Pedido
+select * from #CopiaPedido2
+---
+-- Listagem
+select * from #copiapedido2 where codven=(select codven from tb_vendedor where nome='Marcelo')
+-- Excluindo
+delete from #copiapedido2 where codven=(select codven from tb_vendedor where nome='Marcelo')
+-- Listagem
+select * from #CopiaPedido2 order by codven
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--	MERGE (p382)
+-- Sincronizar duas tabelas, inserindo, atualizando ou excluindo linhas de uma tabela de destino 
+-- com base nas diferenças em relação aos dados de origem
+
+-- No SQL Server, é possível executar operações de inserção, atualização ou exclusão 
+-- em uma única instrução usando MERGE
+
+-- Inserir ou atualizar linhas em uma única tabela de destino condicionalmente. Se a linha existir 
+-- na tabela de destino, atualize uma ou mais colunas; caso contrário, insira os dados em 
+-- uma nova linha
+
+-- As alterações (dados inseridos, alterados, excluidos) podem ser apresentados em tela 
+-- ou salvos em tabelas instrução
+
+
+-- A) Montagem
+if object_id('Origem', 'U') is not null drop table Origem
+if object_id('Destino', 'U') is not null drop table Destino
+
+create table Origem
+	(Cod int, 
+	 Nome varchar(50),
+	 Salario numeric(10,2)
+	 constraint OrigemPK primary key (Cod))
+
+create table Destino
+	(Cod int, 
+	 Nome varchar(50),
+	 Salario numeric(10,2)
+	 constraint DestinoPK primary key (Cod))
+
+insert into Origem values 
+	(100,'Eleonora',10000),
+	(101,'Anna',9000),
+	(102,'Denise',8000),
+	(103,'Juvia',7000)
+
+insert into Destino values
+	(104,'Conrado',15000),
+	(105,'Antonio',null),
+	(106,'Anastolfo',7000)
+--
+select * from Origem
+select * from Destino
+
+-- A clausula OUPUT permite apresentar em tela os registros incluidos, alterados ou excluidos
+if object_id('TesteOutput') is  not null drop table TesteOutput
+select * into TesteOutput from tb_cor
+select * from testeoutput
+--
+-- Incluir
+insert  into testeoutput 
+		output inserted.* 
+values ( 26,'Azul Brilhante')
+
+-- Modificar
+update TesteOutput set cor='Incolor' 
+		output 
+			deleted.cor as 'Apagado', 
+			inserted.cor as 'Novo'
+where codcor=1
+
+-- Excluir
+delete TesteOutput 
+		output deleted.* 
+where codcor=26
+
+Criação da tabela de Histórico
+if object_id('Historico') is not null drop table Historico
+--
+create table Historico
+		(DataAcao Date,
+		Horario time(0),
+		Acao varchar(15),
+		NomeUsuario varchar(20),
+		--
+		AntigoCod int,
+		AntigoNome varchar(15),
+		AntigoSalario decimal(10,2),
+		--
+		NovoCod int,
+		NovoNome  varchar(15),
+		NovoSalario decimal(10,2))
+
+-- Inclusão de registros com Historico
+merge Destino using Origem ON destino.cod=origem.cod
+when not matched by target then 
+insert (cod,Nome) values (origem.cod,origem.Nome)
+output
+		getdate() as DataAcao,
+		cast(getdate() as time(0)) as Horario,
+		$Action as Acao,
+		user_name(),
+		--
+		Deleted.Cod as AntigoCod,
+		Deleted.Nome as AntigoNome,
+		Deleted.Salario as AntigoSalario,
+		--
+		Inserted.Cod as NovoCod,
+		Inserted.Nome as NovoNome,
+		Inserted.Salario as NovoSalario
+into Historico;
+
+-- Depois
+select * from Origem
+select * from Destino
+select * from Historico
+
+-----------------------------------------------------
+--  Alteração de registros (com tabela, com output)
+merge Destino using Origem ON destino.cod=origem.cod
+when matched and Destino.salario is null
+then update set Destino.Salario=Origem.Salario
+output
+		getdate() as DataAcao,
+		cast(getdate() as time(0)) as Horario,
+		$Action as Acao,
+		user_name(),
+		--
+		Deleted.Cod as AntigoCod,
+		Deleted.Nome as AntigoNome,
+		Deleted.Salario as AntigoSalario,
+		--
+		Inserted.Cod as NovoCod,
+		Inserted.Nome as NovoNome,
+		Inserted.Salario as NovoSalario
+into Historico;
+--
+select * from Origem
+select * from Destino
+select * from Historico
+
+-----------------------------------------------------
+-- H) Exclusão de registros com tabela
+merge Destino using Origem ON destino.cod=origem.cod
+when not matched by source then delete  
+output
+		getdate() as DataAcao,
+		cast(getdate() as time(0)) as Horario,
+		$Action as Acao,
+		user_name(),
+		--
+		Deleted.Cod as AntigoCod,
+		Deleted.Nome as AntigoNome,
+		Deleted.Salario as AntigoSalario,
+		--
+		Inserted.Cod as NovoCod,
+		Inserted.Nome as NovoNome,
+		Inserted.Salario as NovoSalario
+into Historico;
+--
+select * from Origem
+select * from Destino
+select * from Historico
+-------
+---------------------------------------------------------------------------------------------------------------------------------
+-- TRANSAÇÃO (p142)
+/* Uma transação é uma única unidade de trabalho(por exemplo um conjunto de comandos que alteram dados)
+Se uma transação tiver êxito, todas as modificações de dados feitas durante a transação estarão 
+confirmadas e se tornarão parte permanente do banco de dados. Se uma transação encontrar erros e 
+precisar ser cancelada ou revertida, todas as modificações de dados serão apagadas
+
+Transações de confirmação automática
+	O modo de confirmação automática é o modo padrão de gerenciamento de transações 
+	do mecanismo de banco de dados do SQL Server. Toda instrução Transact-SQL é confirmada 
+	ou revertida quando concluída. Se uma instrução for concluída com sucesso, será confirmada; 
+	se encontrar qualquer erro, será revertida
+	
+Transações implícitas
+ 	Quando uma conexão operar em modo de transação implícita, a instância do mecanismo de banco 
+	de dados iniciará automaticamente uma nova transação depois que a transação atual for confirmada 
+	ou revertida. Você não faz nada para determinar o início de uma transação; apenas confirma ou reverte 
+	cada uma das transações.
+
+Transações explícitas
+	Uma transação explícita é aquela na qual você pode definir explicitamente o início e o término 
+	da transação pela função de API ou pela emissão de instruções Transact-SQL BEGIN TRANSACTION, 
+	COMMIT TRANSACTION, COMMIT WORK, ROLLBACK TRANSACTION ou ROLLBACK WORK Transact-SQL. Quando a 
+	transação terminar, a conexão volta ao modo de transação em que estava antes de a transação 
+	explícita ser iniciada, seja o modo implícito ou de confirmação automática.
+*/
+
+-- 2) Transação explícita (controlada pelo operador)
+-- select @@trancount  = Conta as transacões não encerradas
+-- begin transaction      = Indica o início das operações controladas
+-- rollback transaction	 = Reverte os resultados das  ações e fecha a transação
+-- commit transaction   = Confirma os resultados das ações e fecha a transação
+
+-- Exemplo 1
+-- a) Preparar copia
+if object_id('CopiaEmpre') is not null drop table CopiaEmpre
+select * into CopiaEmpre from tb_Empregado
+select * from copiaempre
+select sum(salario) from CopiaEmpre	 -- 136920.00
+
+-- b) Verificar se existe alguma transação explícita em aberto (não efetivada)
+select @@trancount
+-- c) Montar a transação explícita
+	begin transaction																	-- Início da transação controlada pelo operador
+				select @@trancount													-- Verificacao
+				--
+				update CopiaEmpre set Salario=Salario*2 						-- Atualizar valores
+				select sum(salario) from CopiaEmpre								-- Verificacao
+				--
+				delete from Copiaempre where nome='Olavo Trindade'	-- Excluir registro
+				select * from Copiaempre											-- Verificacao
+				--
+				drop table CopiaEmpre                                               -- Excluir a tabela
+				select * from Copiaempre										   -- Verificacao
+	rollback transaction		-- Reverter as ações e fecha a transação
+				select @@trancount													-- Verificacao
+         --
+	commit transaction			-- Aceitas as alterações e fecha a transação
+				select @@trancount													-- Verificacao
+
+-- COLUNAS COMPUTADAS (p364)
+-- Semelhante ao campo calculado do Access
+-- Inclusão de colunas resultantes de cálculo na estrutura da tabela
+-- Colunas computadas são colunas virtuais que não são armazenadas fisicamente na tabela. 
+-- Seus valores são calculados novamente sempre que sejam referenciados em uma consulta, 
+-- a menos que a coluna esteja definida como PERSISTED
+
+
+PERSISTED
+	Existe no Mecanismo de Banco de Dados a palavra-chave PERSISTED nas instruções 
+	CREATE TABLE e ALTER TABLE 	para armazenar fisicamente as colunas computadas 
+	em uma tabela. Seus valores são atualizados quando as colunas que fazem 
+	parte de seus cálculos são alteradas. Marcar uma coluna computada como 
+	PERSISTED permite que um índice seja criado em uma coluna calculada que 
+	é determinística, mas não precisa. 
+
+	O cálculo da expressão de uma coluna computada pode impactar no desempenho 
+	das consultas em uma tabela, principalmente se 
+	a expressão realizar operações complexas do ponto de vista computacional.
+
+	A propriedade PERSISTED pode evitar esta perda de desempenho, pois as colunas 
+	computadas com esta propriedade armazenam fisicamente o valor no momento 
+	em que o registro é inserido ou alterado. Assim, não é necessário efetuar o cálculo novamente.
+
+https://jvilar.wordpress.com/2016/04/09/colunas-computadas-sql-server/
+
+-- Exemplo 2 - Coluna computada
+-- Campo (coluna) computada porém não gravada no disco (não é persisted). 
+-- Os cálculos são refeitos automaticamente a cada nova alteração dos dados
+if object_id('TesteColuna2') is not null drop table TesteColuna2
+create table TesteColuna2 
+(Num int identity primary key,
+Punit numeric(10,2) null, 
+Qtd int null, 
+Total  as (punit*qtd))
+---
+insert into testecoluna2(punit,qtd) values (12,20)
+select * from testecoluna2
+--
+insert into testecoluna2(punit,qtd) values (16,29)
+select * from testecoluna2
+--
+exec sp_help TesteColuna2
+
+/*
+Uma coluna computada não pode ser usada como uma definição de restrição 
+DEFAULT ou FOREIGN KEY ou NOT NULL ou objeto de uma instrução INSERT ou UPDATE.
+*/
+update TesteColuna2 set Punit=18 where num=1
+select * from testecoluna2
+--
+update TesteColuna2 set Total=500 where num=1 -- Erro
+-- c) Campo (coluna) computada gravada no disco (Persisted). 
+--    Os cálculos são feitos e armazenados no disco
+if object_id('TesteColuna3') is not null drop table TesteColuna3
+--
+create table TesteColuna3 
+(Num int identity primary key,
+Punit numeric(10,2) null, 
+Qtd int null, 
+Total  as (punit*qtd) persisted)
+--
+insert into testecoluna3(punit,qtd) values (12,20)
+select * from testecoluna3
+--
+insert into testecoluna3(punit,qtd) values (16,29)
+select * from testecoluna3
+--
+exec sp_help TesteColuna3
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+-- SINÔNIMOS (p363)
+/* SINÔNIMOS são recursos que permitem substituir de maneira duradoura o nome de um objeto, 
+	valendo para todo o banco, por tempo indeterminado
+--
+	ALIAS são psedônimos, nomes alternativos temporários (existem em tempo de execução) 
+	para campos, tabelas e conexões
+--
+	LEGENDA (ou alias ou nome alternativo ou apelido) da coluna na listagem
+*/
+
+-- Exemplo
+-- Sinônimo (apelido válido para o banco inteiro) permanece até ser apagado
+if object_id('ValorEstimadoDoProdutoSazonal') is not null drop table ValorEstimadoDoProdutoSazonal
+--
+create table ValorEstimadoDoProdutoSazonal
+(CodProd int, valor numeric (11,2), Nome varchar(20))
+
+insert into ValorEstimadoDoProdutoSazonal values
+(1,100,'P1'),
+(2,150,'P2'),
+(3,345,'P3')
+
+select * from ValorEstimadoDoProdutoSazonal
+
+-- Definição do sinônimo
+if object_id('veps') is not null drop synonym veps
+--
+create synonym veps for ValorEstimadoDoProdutoSazonal
+select * from sys.synonyms order by name
+
+-- Utilização
+select * from veps
+insert into veps values(4,333,'P8')
+update veps set valor=1500 where codprod=2
+delete from veps where codprod=4
+select * from veps
+--
+select * from sys.tables order by name -- O nome veps não é listado
+select * from sys.synonyms order by name
+--
+-- IDENTITY_INSERT
+-- Desliga o preenchimento automatico do Insert permitindo a inclusão de registros 
+-- com a PK desejada
+-- 1) Criar tabela
+
+drop table if exists #Exemplo
+
+Create table Exemplo
+(Codigo int identity(1,1) primary key, 
+nome varchar(100))
+--
+insert into Exemplo values ('Impacta'),('Av. Paulista'),('SQL-Server')
+--
+select * from Exemplo
+delete from Exemplo where codigo=2
+select * from Exemplo
+
+-- 2) Testar
+insert into Exemplo values (2,'Av Paulista') -- Erro
+select * from Exemplo
+
+
+-- 3) Zerando o valor de identity. Zero é um valor habitual, se for  200 a 
+-- numeração se iniciaria a partir desse valor
+delete from Exemplo
+select * from Exemplo
+dbcc checkident('Exemplo',reseed,0) -- recomeçar a numeração do zero
+select Ident_Current('Exemplo')
+
+--Verificação
+insert into Exemplo values('Transact-SQL')
+select * from Exemplo
+
+
+-- Outras funções (verificações)
+select identitycol from Exemplo				-- Apresenta os valores da coluna identity da tabela
+select ident_incr ('Exemplo')					-- Valor do incremento da coluna Identity
+select ident_seed('Exemplo')				-- Valor original definido para a coluna 1		
+--
+-- 3) Exemplo de VIEW
+create view uvListaEmpregadoDependente as
+select 
+	tb_empregado.nome as Empregado,
+	tb_dependente.nome as Dependente 
+from tb_dependente inner join tb_empregado 
+on tb_dependente.CodFun=tb_empregado.CodFun
+--
+-- Testar
+select * from uvListaEmpregadoDependente
+-- Excluir
+drop view uvConsultaWilliam
+
+
+-- 4)Exemplo de PROCEDURE
+-- Criar
+create procedure upTotalFaturamentoAno (@ano int) as
+	select sum(vlr_total) from tb_Pedido where year(data_emissao)=@ano
+
+-- Testar
+exec uptotalfaturamentoano 2019
+
+---------------------------------------------------------------------
+-- 5) Exemplo de FUNCTION
+create function ufMaiorPedido(@Dt1 datetime, @Dt2 datetime) returns table as
+return
+	(select 
+	year(Data_emissao) as ano,
+	month(Data_Emissao) as mes,
+	max(vlr_total) as MaiorValor
+from tb_pedido
+where data_emissao between @dt1 and @dt2
+group by  year(data_emissao),month(data_emissao))
+
+-- Testar
+set dateformat YMD	-- Definir o modo de digitação das datas
+select * from ufMaiorPedido('2018.01.01','2018.12.15') order by 1,2
+select * from ufMaiorPedido('2017.01.01','2018.12.31') order by 1,2
+
+drop function ufMaiorPedido
+
+-- 6) Exemplo de TRIGGER
+create trigger utDropTabela 
+on database			-- Objeto a ser monitorado
+for Drop_table as	-- Evento monitorado e que ativa a trigger
+begin
+	print '----------------------------------------------------'
+	print 'NÃO É PERMITIDO APAGAR TABELAS !!!'
+	print '----------------------------------------------------'
+	rollback
+end
+-- Testar
+create table AA(a int)
+select * from AA
+drop table AA
+-- Apagar
+disable trigger utdroptabela on database
+drop trigger utdroptabela on database
+
 
 
 
